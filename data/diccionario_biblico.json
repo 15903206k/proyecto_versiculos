@@ -1,0 +1,57 @@
+{
+  "amor": {
+    "keywords": ["amor", "amar", "caridad", "querer", "bondad", "benevolencia", "afecto"],
+    "versiculos": [
+      {"texto": "El amor verdadero viene de Dios.", "cita": "1 Juan 4:8"},
+      {"texto": "El amor es paciente, es benigno; el amor no tiene envidia.", "cita": "1 Corintios 13:4"},
+      {"texto": "Sobre todas estas cosas vestíos de amor, que es el vínculo perfecto.", "cita": "Colosenses 3:14"},
+      {"texto": "Amarás a Jehová tu Dios con todo tu corazón y con toda tu alma.", "cita": "Mateo 22:37"},
+      {"texto": "Y a tu prójimo como a ti mismo.", "cita": "Mateo 22:39"}
+    ]
+  },
+
+  "fe": {
+    "keywords": ["fe", "creer", "confiar", "esperar", "certeza", "confianza"],
+    "versiculos": [
+      {"texto": "Es, pues, la fe la certeza de lo que se espera.", "cita": "Hebreos 11:1"},
+      {"texto": "Sin fe es imposible agradar a Dios.", "cita": "Hebreos 11:6"},
+      {"texto": "Si puedes creer, al que cree todo le es posible.", "cita": "Marcos 9:23"},
+      {"texto": "Fíate de Jehová de todo tu corazón.", "cita": "Proverbios 3:5"},
+      {"texto": "El justo por la fe vivirá.", "cita": "Romanos 1:17"}
+    ]
+  },
+
+  "esperanza": {
+    "keywords": ["esperanza", "animo", "futuro", "revestir", "confiar", "salvación"],
+    "versiculos": [
+      {"texto": "El Dios de la esperanza os llene de todo gozo y paz.", "cita": "Romanos 15:13"},
+      {"texto": "Porque en esperanza fuimos salvados.", "cita": "Romanos 8:24"},
+      {"texto": "Los que esperan en Jehová renovarán sus fuerzas.", "cita": "Isaías 40:31"},
+      {"texto": "Ahora permanecen la fe, la esperanza y el amor.", "cita": "1 Corintios 13:13"},
+      {"texto": "Los labios del justo hablarán sabiduría.", "cita": "Proverbios 10:31"}
+    ]
+  },
+
+  "paz": {
+    "keywords": ["paz", "calma", "tranquilidad", "reposo", "serenidad"],
+    "versiculos": [
+      {"texto": "La paz de Dios, que sobrepasa todo entendimiento.", "cita": "Filipenses 4:7"},
+      {"texto": "La paz os dejo, mi paz os doy.", "cita": "Juan 14:27"},
+      {"texto": "Y la paz de Dios gobierne en vuestros corazones.", "cita": "Colosenses 3:15"},
+      {"texto": "Guarda en completa paz a aquel cuyo pensamiento en ti persevera.", "cita": "Isaías 26:3"},
+      {"texto": "En paz me acostaré y asimismo dormiré.", "cita": "Salmo 4:8"}
+    ]
+  },
+
+  "perdon": {
+    "keywords": ["perdon", "perdonar", "indulgencia", "misericordia", "reconciliación", "soltar"],
+    "versiculos": [
+      {"texto": "Perdonándoos unos a otros.", "cita": "Efesios 4:32"},
+      {"texto": "De la manera que Cristo os perdonó, así también hacedlo vosotros.", "cita": "Colosenses 3:13"},
+      {"texto": "Padre, perdónalos, porque no saben lo que hacen.", "cita": "Lucas 23:34"},
+      {"texto": "Si perdonáis a los hombres sus ofensas, vuestro Padre también os perdonará.", "cita": "Mateo 6:14"},
+      {"texto": "Sed, pues, bondadosos... perdonándoos unos a otros.", "cita": "Efesios 4:32"}
+    ]
+  }
+}
+

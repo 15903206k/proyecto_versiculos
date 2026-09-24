@@ -1,0 +1,11 @@
+{
+  "id": "f7d62a95-f582-4b78-9c25-3f900c54a423",
+  "nombre_archivo": "Pablosierra-Piensasenmi.m4a",
+  "status": "processing",
+  "progress": 20,
+  "message": "Limpieza completada. Iniciando Demucs...",
+  "created_at": "2026-07-16T20:32:52.834684",
+  "started_at": "2026-07-16T20:32:52.836870",
+  "completed_at": null,
+  "result": null
+}

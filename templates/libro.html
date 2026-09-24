@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Bíblica Infantil Interactive</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Tipografía amigable para niños -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+        <style>
+        /* --- ESTILOS ADICIONALES EXCLUSIVOS DEL LIBRO MULTI-HISTORIAS --- */
+
+        /* Paleta infantil pastel + ambiente de cuento */
+        :root {
+            --kids-bg-1: #FFF7D6; /* amarillo crema */
+            --kids-bg-2: #E7F6FF; /* celeste suave */
+            --kids-bg-3: #FFFFFF;
+
+            --kids-primary: #2E7D32; /* verde cuento */
+            --kids-text: #2f2f2f;
+
+            --kids-shadow-1: 0 18px 55px rgba(28, 60, 90, 0.10);
+            --kids-shadow-2: 0 3px 14px rgba(28, 60, 90, 0.08);
+
+            --kids-glow: rgba(255, 255, 255, 0.75);
+        }
+
+        /* Fondo de la vista */
+        body.kids-bg {
+            min-height: 100vh;
+            background:
+                radial-gradient(900px circle at 15% 10%, rgba(255, 215, 90, 0.30), transparent 55%),
+                radial-gradient(800px circle at 90% 20%, rgba(80, 190, 255, 0.22), transparent 60%),
+                linear-gradient(180deg, var(--kids-bg-1), var(--kids-bg-2) 55%, var(--kids-bg-3));
+        }
+
+        .kids-library-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .library-title {
+            font-family: 'Fredoka', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            font-size: 3rem;
+            color: var(--kids-primary);
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.9);
+            letter-spacing: 0.5px;
+        }
+
+        .library-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: rgba(30,30,30,0.75);
+            margin-bottom: 26px;
+            font-family: 'Quicksand', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            font-weight: 600;
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 22px;
+            margin-top: 10px;
+        }
+
+        /* Tarjetas tipo "nube" (glass + neumorphism suave) */
+        .book-cover-card {
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            user-select: none;
+
+            /* profundidad + relieve */
+            box-shadow: var(--kids-shadow-2), inset 0 1px 0 var(--kids-glow);
+            transition: transform 0.30s cubic-bezier(.2,.9,.2,1), box-shadow 0.30s ease, border-color 0.30s ease;
+            transform: translateZ(0);
+
+            backdrop-filter: blur(10px);
+        }
+
+        .book-cover-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background:
+                radial-gradient(500px circle at 15% 0%, rgba(255, 215, 90, 0.35), transparent 55%),
+                radial-gradient(480px circle at 90% 10%, rgba(80, 190, 255, 0.25), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.30s ease;
+            pointer-events: none;
+        }
+
+        .book-cover-card:hover {
+            border-color: rgba(255, 215, 90, 0.55);
+            box-shadow: var(--kids-shadow-1), 0 6px 22px rgba(28, 60, 90, 0.12), inset 0 1px 0 rgba(255,255,255,0.85);
+
+            /* micro-interacción "rebote" suave */
+            transform: translateY(-10px) scale(1.03);
+        }
+
+        .book-cover-card:hover::before {
+            opacity: 1;
+        }
+
+        /* teclado: misma sensación que hover */
+        .book-cover-card:focus-visible {
+            outline: 3px solid rgba(80, 190, 255, 0.35);
+            outline-offset: 4px;
+        }
+
+        /* Imagen del cover */
+        .cover-img-wrapper {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(180deg, rgba(212,175,55,0.18), rgba(74,21,37,0.05));
+        }
+
+        .cover-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.02);
+            transition: transform 0.35s ease;
+        }
+
+        .book-cover-card:hover .cover-img-wrapper img {
+            transform: scale(1.07);
+        }
+
+        .book-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #163238;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+            border: 1px solid rgba(255,255,255,0.65);
+            backdrop-filter: blur(8px);
+        }
+
+        .book-cover-info {
+            padding: 18px 18px 20px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .book-cover-info h3 {
+            font-family: 'Fredoka', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            font-size: 1.6rem;
+            color: #333;
+        }
+
+        .primary-mini-btn {
+            margin: 0 auto;
+            width: fit-content;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.20s ease, filter 0.20s ease, opacity 0.2s ease;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.10);
+            font-family: 'Quicksand', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+            /* Para unificar con pastilla aunque haya style inline */
+            background: linear-gradient(180deg, #BFE7FF, #7ED3FF) !important;
+            color: #12313A !important;
+            border: 2px solid rgba(255,255,255,0.75);
+            backdrop-filter: blur(8px);
+        }
+
+        .primary-mini-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 20px 44px rgba(0, 0, 0, 0.14);
+            filter: saturate(1.06);
+            opacity: 0.98;
+        }
+
+        .primary-mini-btn:active {
+            transform: translateY(0) scale(0.99);
+        }
+
+        .card-creacion { border-color: rgba(79,195,247,0.65); }
+        .card-moises { border-color: rgba(129,199,132,0.65); }
+        .card-jose { border-color: rgba(186,104,200,0.65); }
+        .card-david { border-color: rgba(255,213,79,0.65); }
+        .card-elias { border-color: rgba(255,138,101,0.65); }
+        .card-job { border-color: rgba(161,136,127,0.65); }
+
+        /* ====== Animación tipo “voltear hoja” (3D) ====== */
+        .interactive-book {
+            display: flex;
+            position: relative;
+            perspective: 1200px;
+        }
+
+        .interactive-book {
+            border-radius: 18px;
+            border: 3px solid rgba(74,21,37,0.18);
+            background: linear-gradient(180deg, rgba(255,248,225,1), rgba(255,255,255,1));
+            box-shadow:
+                0 18px 42px rgba(0,0,0,0.16),
+                inset 0 0 0 2px rgba(255,255,255,0.55);
+            overflow: hidden;
+        }
+
+        .left-page,
+        .right-page {
+            border-radius: 0;
+            box-shadow: inset 0 0 0 1px rgba(74,21,37,0.08);
+        }
+
+        /* Textura pergamino sutil */
+        .left-page {
+            background:
+                radial-gradient(circle at 20% 10%, rgba(212,175,55,0.22), transparent 38%),
+                radial-gradient(circle at 80% 20%, rgba(74,21,37,0.10), transparent 40%),
+                linear-gradient(180deg, #FFF8E1, #FFFFFF);
+        }
+
+        .right-page {
+            background:
+                radial-gradient(circle at 15% 25%, rgba(212,175,55,0.15), transparent 40%),
+                radial-gradient(circle at 80% 65%, rgba(74,21,37,0.10), transparent 45%),
+                linear-gradient(180deg, #FFFFFF, #FFFDF6);
+        }
+
+        .left-page {
+            box-shadow:
+                inset -10px 0 18px rgba(74,21,37,0.06),
+                inset 8px 0 14px rgba(212,175,55,0.06);
+        }
+
+        .right-page {
+            box-shadow:
+                inset 10px 0 18px rgba(74,21,37,0.06),
+                inset -8px 0 14px rgba(212,175,55,0.05);
+        }
+
+        #book-text-front,
+        #book-text-back {
+            font-size: 1.18rem;
+            line-height: 1.75;
+            color: #2f2f2f;
+        }
+
+        .book-divider {
+            height: 2px;
+            background: linear-gradient(90deg, rgba(212,175,55,0.75), rgba(74,21,37,0.10));
+            box-shadow: 0 1px 0 rgba(255,255,255,0.7);
+        }
+
+        .book-verse-tag {
+            background: rgba(212,175,55,0.26);
+            border: 2px solid rgba(212,175,55,0.28);
+        }
+
+        .page-number {
+            color: rgba(74, 21, 37, 0.55);
+            font-size: 1.02rem;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+        }
+
+        .left-page, .right-page {
+            flex: 0 0 auto;
+            height: 100%;
+        }
+
+        .book-page { backface-visibility: hidden; height: 340px; }
+
+        .page-flip-stage {
+            position: relative;
+            width: 100%;
+            height: 340px;
+            min-height: 340px;
+            transform-style: preserve-3d;
+        }
+
+        .page-flip-front {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            backface-visibility: hidden;
+            transform-origin: left center;
+        }
+
+        .page-flip-back {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            backface-visibility: hidden;
+            transform: rotateY(180deg);
+            transform-origin: left center;
+        }
+
+        .page-flip-turn-right .page-flip-front {
+            animation: flipRightFront 0.45s ease-in-out forwards;
+        }
+        .page-flip-turn-right .page-flip-back {
+            animation: flipRightBack 0.45s ease-in-out forwards;
+        }
+
+        .page-flip-turn-left .page-flip-front {
+            animation: flipLeftFront 0.45s ease-in-out forwards;
+        }
+        .page-flip-turn-left .page-flip-back {
+            animation: flipLeftBack 0.45s ease-in-out forwards;
+        }
+
+        @keyframes flipRightFront {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(-90deg); }
+            100% { transform: rotateY(-180deg); }
+        }
+
+        @keyframes flipRightBack {
+            0% { transform: rotateY(180deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+
+        @keyframes flipLeftFront {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(180deg); }
+        }
+
+        @keyframes flipLeftBack {
+            0% { transform: rotateY(180deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .page-flip-turn-right .page-flip-front,
+            .page-flip-turn-right .page-flip-back,
+            .page-flip-turn-left .page-flip-front,
+            .page-flip-turn-left .page-flip-back {
+                animation: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .library-title { font-size: 2.3rem; }
+            .library-subtitle { font-size: 1rem; }
+            .stories-grid { gap: 16px; }
+        }
+
+        .book-wrapper {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        .interactive-book {
+            margin-top: 18px;
+            position: relative;
+        }
+
+        .interactive-book::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 3px;
+            transform: translateX(-50%);
+            background: rgba(74, 21, 37, 0.12);
+            box-shadow: -2px 0 10px rgba(74, 21, 37, 0.10);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .book-page {
+            min-height: 340px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 3;
+        }
+
+        .left-page {
+            flex: 0 0 48% !important;
+            width: 48% !important;
+            max-width: 48%;
+            padding: 20px;
+            border-right: 1px solid rgba(0,0,0,0.06);
+            box-sizing: border-box;
+        }
+
+        .right-page {
+            flex: 0 0 52% !important;
+            width: 52% !important;
+            max-width: 52%;
+            padding: 0;
+            text-align: left;
+            font-family: 'Comic Neue', cursive;
+            box-sizing: border-box;
+        }
+
+        .book-img-container {
+            width: 360px;
+            height: 300px;
+            margin: 0 auto;
+            border-radius: 12px;
+            border: 6px solid #fff;
+            box-shadow: 0 12px 26px rgba(0,0,0,0.12);
+            overflow: hidden;
+            background: #fff;
+            flex-shrink: 0;
+        }
+
+        .book-page.left-page {
+            height: 100%;
+            min-height: 340px;
+        }
+
+        .book-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transform: rotate(-0.6deg);
+        }
+
+        .book-text-wrapper { width: 100%; }
+
+        .book-verse-tag {
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            background: rgba(212,175,55,0.18);
+            color: #8a5a00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+        }
+
+        .book-divider {
+            height: 2px;
+            width: 100%;
+            background: linear-gradient(90deg, rgba(212,175,55,0.65), rgba(74,21,37,0.08));
+            border-radius: 999px;
+            margin: 14px 0;
+        }
+
+        .book-tip {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.98rem;
+            font-weight: 650;
+            color: rgba(74,21,37,0.75);
+            margin-top: 0;
+        }
+
+        .book-page.right-page {
+            position: relative;
+            height: 340px;
+            min-height: 340px;
+        }
+
+        .book-page.right-page .book-text-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            min-height: 340px;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            line-height: 1.6;
+            text-align: justify;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .book-page.right-page .book-verse-tag,
+        .book-page.right-page .book-divider,
+        .book-page.right-page #book-text-front,
+        .book-page.right-page #book-text-back {
+            max-width: 100%;
+        }
+
+        .book-page.right-page #book-text-front,
+        .book-page.right-page #book-text-back {
+            padding-left: 0;
+            padding-right: 0;
+            box-sizing: border-box;
+        }
+
+        .page-flip-front .book-page.right-page,
+        .page-flip-back .book-page.right-page {
+            overflow: hidden;
+            position: relative;
+            clip-path: none;
+        }
+
+        #page-back-right .book-text-wrapper {
+            padding-top: 35px !important;
+            height: 100%;
+            min-height: 340px;
+        }
+
+        #page-back-right #book-text-back {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            flex: 1 1 auto;
+            margin: 0;
+            padding: 0;
+            display: block;
+        }
+
+        #book-text-front,
+        #book-text-back {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-size: 1.05rem;
+            line-height: 1.55;
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex: 1 1 auto;
+            align-self: stretch;
+            box-sizing: border-box;
+        }
+
+        #book-text-front,
+        #book-text-back {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        #book-text-front,
+        #book-text-back {
+            width: 100%;
+            font-family: 'Comic Neue', cursive;
+            font-size: 1.25rem;
+            color: #3f3f3f;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+            margin: 0;
+            padding: 0;
+            overflow-wrap: anywhere;
+            word-break: normal;
+        }
+
+        .book-tip {
+            margin-top: 0;
+            font-size: 0.98rem;
+        }
+
+        @media (max-width: 520px) {
+            #book-text-front,
+            #book-text-back {
+                font-size: 1.05rem;
+                line-height: 1.55;
+            }
+            .book-page.right-page .book-text-wrapper {
+                padding: 0;
+                gap: 8px;
+                height: 340px;
+                box-sizing: border-box;
+            }
+        }
+
+        .page-number {
+            height: 0;
+            line-height: 0;
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            z-index: 10;
+            margin: 0;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: rgba(74, 21, 37, 0.45);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .book-page.right-page .book-text-wrapper {
+            padding-top: 35px !important;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .book-page.right-page .book-tip {
+            margin-top: 2px;
+        }
+
+        .book-page.right-page .book-tip { margin-top: 2px; }
+
+        .page-flip-back .page-number {
+            top: 16px;
+            right: 18px;
+        }
+
+        .book-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 18px;
+        }
+
+        .book-controls button {
+            background: linear-gradient(180deg, rgba(255,152,0,1), rgba(255,120,0,1));
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            font-size: 1.05rem;
+            font-weight: 900;
+            border-radius: 999px;
+            cursor: pointer;
+            box-shadow: 0 14px 30px rgba(255, 152, 0, 0.22);
+            transition: transform 0.15s ease, opacity 0.2s ease;
+        }
+
+        .book-controls button:hover { transform: translateY(-2px); opacity: 0.95; }
+
+        .book-controls button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+        @media (max-width: 800px) {
+            .interactive-book::before { display: none; }
+            .left-page, .right-page { width: 100%; }
+            .interactive-book { flex-direction: column; }
+            .book-page { min-height: unset; }
+            .book-controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body class="kids-bg">
+    <!-- CONTENEDOR 1: MENÚ DE SELECCIÓN DE HISTORIAS -->
+    <div id="view-menu" class="kids-library-container">
+        <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Volver al Portal Principal</a>
+
+        <h1 class="library-title">✨ Mi Pequeña Biblia de Historias ✨</h1>
+        <p class="library-subtitle">Elige tu historia favorita y comienza a hojear tu libro mágico</p>
+
+            <div style="margin-top: 14px;">
+                <h2 style="font-family:'Comic Neue', cursive; color:#4A1525; text-align:center; margin: 18px 0 10px;">
+                    📜 Antiguo Testamento
+                </h2>
+
+                <div class="stories-grid">
+
+                    <!-- La Creación -->
+                    <div class="book-cover-card card-creacion" role="button" tabindex="0" onclick="abrirLibro('creacion')" onkeydown="if(event.key==='Enter') abrirLibro('creacion')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge">Antiguo Testamento</span>
+                            <img src="{{ url_for('static', filename='img/creacion1.png') }}" alt="La Creación">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>La Creación del Mundo</h3>
+                            <button class="primary-mini-btn" style="background:#4fc3f7;color:#163238;" type="button" onclick="event.stopPropagation();abrirLibro('creacion')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Moisés -->
+                    <div class="book-cover-card card-moises" role="button" tabindex="0" onclick="abrirLibro('moises')" onkeydown="if(event.key==='Enter') abrirLibro('moises')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge">Antiguo Testamento</span>
+                            <img src="{{ url_for('static', filename='img/imagen2moises.png') }}" alt="Moisés">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>El Gran Viaje de Moisés</h3>
+                            <button class="primary-mini-btn" style="background:#81c784;color:#0f2b13;" type="button" onclick="event.stopPropagation();abrirLibro('moises')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- José -->
+                    <div class="book-cover-card card-jose" role="button" tabindex="0" onclick="abrirLibro('jose')" onkeydown="if(event.key==='Enter') abrirLibro('jose')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge">Antiguo Testamento</span>
+                            <img src="{{ url_for('static', filename='img/imagen3tunicadejose.png') }}" alt="José">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>José y su Túnica de Colores</h3>
+                            <button class="primary-mini-btn" style="background:#ba68c8;color:#2e1035;" type="button" onclick="event.stopPropagation();abrirLibro('jose')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- David -->
+                    <div class="book-cover-card card-david" role="button" tabindex="0" onclick="abrirLibro('david')" onkeydown="if(event.key==='Enter') abrirLibro('david')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge">Antiguo Testamento</span>
+                            <img src="{{ url_for('static', filename='img/imagenelpastordavid.png') }}" alt="David">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>El Pequeño Pastor David</h3>
+                            <button class="primary-mini-btn" style="background:#ffd54f;color:#3b2a00;" type="button" onclick="event.stopPropagation();abrirLibro('david')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Elías -->
+                    <div class="book-cover-card card-elias" role="button" tabindex="0" onclick="abrirLibro('elias')" onkeydown="if(event.key==='Enter') abrirLibro('elias')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge">Antiguo Testamento</span>
+                            <img src="{{ url_for('static', filename='img/eliasimagen.png') }}" alt="Elías">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>Elías y los Pájaros Mensajeros</h3>
+                            <button class="primary-mini-btn" style="background:#ff8a65;color:#3a1306;" type="button" onclick="event.stopPropagation();abrirLibro('elias')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Job -->
+                    <div class="book-cover-card card-job" role="button" tabindex="0" onclick="abrirLibro('job')" onkeydown="if(event.key==='Enter') abrirLibro('job')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge">Antiguo Testamento</span>
+                            <img src="{{ url_for('static', filename='img/jobimagen.png') }}" alt="Job">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>La Gran Paciencia de Job</h3>
+                            <button class="primary-mini-btn" style="background:#a1887f;color:#1f1a16;" type="button" onclick="event.stopPropagation();abrirLibro('job')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                </div> <!-- /stories-grid Antiguo Testamento -->
+
+                <h2 style="font-family:'Comic Neue', cursive; color:#2e7d32; text-align:center; margin: 26px 0 10px;">
+                    ✨ Milagros de Jesús
+                </h2>
+
+                <div class="stories-grid">
+                    <!-- Milagro 1: Agua en Vino -->
+                    <div class="book-cover-card" role="button" tabindex="0" onclick="abrirLibro('milagro_agua_vino')" onkeydown="if(event.key==='Enter') abrirLibro('milagro_agua_vino')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge" style="background:#D4AF37;">Milagros</span>
+                            <img src="{{ url_for('static', filename='img/el aguaenvino.png') }}" alt="Agua en vino">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>Agua en vino</h3>
+                            <button class="primary-mini-btn" style="background:#D4AF37;color:#4A1525;" type="button" onclick="event.stopPropagation();abrirLibro('milagro_agua_vino')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Milagro 2: Curación de un leproso -->
+                    <div class="book-cover-card" role="button" tabindex="0" onclick="abrirLibro('milagro_leproso')" onkeydown="if(event.key==='Enter') abrirLibro('milagro_leproso')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge" style="background:#D4AF37;">Milagros</span>
+                            <img src="{{ url_for('static', filename='img/curacion-de-leproso.png') }}" alt="Curación de un leproso">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>Curación de un leproso</h3>
+                            <button class="primary-mini-btn" style="background:#D4AF37;color:#4A1525;" type="button" onclick="event.stopPropagation();abrirLibro('milagro_leproso')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Milagro 3: Curación del paralítico de Capernaúm -->
+                    <div class="book-cover-card" role="button" tabindex="0" onclick="abrirLibro('milagro_paralitico')" onkeydown="if(event.key==='Enter') abrirLibro('milagro_paralitico')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge" style="background:#D4AF37;">Milagros</span>
+                            <img src="{{ url_for('static', filename='img/curacion-paralitico.png') }}" alt="Curación del paralítico de Capernaúm">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>Curación del paralítico de Capernaúm</h3>
+                            <button class="primary-mini-btn" style="background:#D4AF37;color:#4A1525;" type="button" onclick="event.stopPropagation();abrirLibro('milagro_paralitico')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Milagro 4: La calma de la tormenta -->
+                    <div class="book-cover-card" role="button" tabindex="0" onclick="abrirLibro('milagro_tormenta')" onkeydown="if(event.key==='Enter') abrirLibro('milagro_tormenta')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge" style="background:#D4AF37;">Milagros</span>
+                            <img src="{{ url_for('static', filename='img/jesus-calma-la-tenpestad.png') }}" alt="La calma de la tormenta">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>La calma de la tormenta</h3>
+                            <button class="primary-mini-btn" style="background:#D4AF37;color:#4A1525;" type="button" onclick="event.stopPropagation();abrirLibro('milagro_tormenta')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Milagro 6 -->
+                    <div class="book-cover-card" role="button" tabindex="0" onclick="abrirLibro('milagro_jairo')" onkeydown="if(event.key==='Enter') abrirLibro('milagro_jairo')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge" style="background:#D4AF37;">Milagros</span>
+                            <img src="{{ url_for('static', filename='img/resureccion-hija-jairo.png') }}" alt="Resurrección de la hija de Jairo">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>Resurrección de la hija de Jairo</h3>
+                            <button class="primary-mini-btn" style="background:#D4AF37;color:#4A1525;" type="button" onclick="event.stopPropagation();abrirLibro('milagro_jairo')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Milagro 7 -->
+                    <div class="book-cover-card" role="button" tabindex="0" onclick="abrirLibro('milagro_panes_peces_5000')" onkeydown="if(event.key==='Enter') abrirLibro('milagro_panes_peces_5000')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge" style="background:#D4AF37;">Milagros</span>
+                            <img src="{{ url_for('static', filename='img/multiplicacion-panes-peces.png') }}" alt="Multiplicación de panes y peces (5.000)">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>Multiplicación de panes y peces (5.000)</h3>
+                            <button class="primary-mini-btn" style="background:#D4AF37;color:#4A1525;" type="button" onclick="event.stopPropagation();abrirLibro('milagro_panes_peces_5000')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Milagro 8 -->
+                    <div class="book-cover-card" role="button" tabindex="0" onclick="abrirLibro('milagro_camina_aguas')" onkeydown="if(event.key==='Enter') abrirLibro('milagro_camina_aguas')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge" style="background:#D4AF37;">Milagros</span>
+                            <img src="{{ url_for('static', filename='img/jesus-caminando-sobre-el-agua.png') }}" alt="Jesús camina sobre las aguas">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>Jesús camina sobre las aguas</h3>
+                            <button class="primary-mini-btn" style="background:#D4AF37;color:#4A1525;" type="button" onclick="event.stopPropagation();abrirLibro('milagro_camina_aguas')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Milagro 9 -->
+                    <div class="book-cover-card" role="button" tabindex="0" onclick="abrirLibro('milagro_ciego_betsaida')" onkeydown="if(event.key==='Enter') abrirLibro('milagro_ciego_betsaida')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge" style="background:#D4AF37;">Milagros</span>
+                            <img src="{{ url_for('static', filename='img/curacion-del-ciego.png') }}" alt="Curación del ciego de Betsaida">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>Curación del ciego de Betsaida</h3>
+                            <button class="primary-mini-btn" style="background:#D4AF37;color:#4A1525;" type="button" onclick="event.stopPropagation();abrirLibro('milagro_ciego_betsaida')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Milagro 10 -->
+                    <div class="book-cover-card" role="button" tabindex="0" onclick="abrirLibro('milagro_lazaro')" onkeydown="if(event.key==='Enter') abrirLibro('milagro_lazaro')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge" style="background:#D4AF37;">Milagros</span>
+                            <img src="{{ url_for('static', filename='img/resureccion-lazaro.png') }}" alt="Resurrección de Lázaro">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>Resurrección de Lázaro</h3>
+                            <button class="primary-mini-btn" style="background:#D4AF37;color:#4A1525;" type="button" onclick="event.stopPropagation();abrirLibro('milagro_lazaro')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                    <!-- Apocalipsis -->
+                    <div class="book-cover-card" role="button" tabindex="0" onclick="abrirLibro('apocalipsis')" onkeydown="if(event.key==='Enter') abrirLibro('apocalipsis')">
+                        <div class="cover-img-wrapper">
+                            <span class="book-badge" style="background:#4fc3f7;">Nuevo Testamento</span>
+                            <img src="{{ url_for('static', filename='img/apocalipcis-img1.png') }}" alt="Apocalipsis">
+                        </div>
+                        <div class="book-cover-info">
+                            <h3>Apocalipsis: Esperanza para el Futuro</h3>
+                            <button class="primary-mini-btn" style="background:#4fc3f7;color:#163238;" type="button" onclick="event.stopPropagation();abrirLibro('apocalipsis')">¡Leer ahora!</button>
+                        </div>
+                    </div>
+
+                </div> <!-- /stories-grid -->
+            </div>
+        </div>
+    
+    <!-- CONTENEDOR 2: EL LIBRO ABIERTO INTERACTIVO -->
+    <div id="view-book" class="book-wrapper" style="display: none;">
+        <button class="back-btn" onclick="volverAlMenu()"><i class="fa-solid fa-chevron-left"></i> Volver a la Biblioteca</button>
+
+        <h1 class="book-main-title" id="current-story-title">Título de la Historia</h1>
+
+        <div class="interactive-book" id="book-container">
+            <div class="book-page left-page" aria-hidden="true">
+                <div class="book-img-container">
+<img id="book-image-static" src="{{ url_for('static', filename='img/creacion1.png') }}" alt="Ilustración Bíblica">
+                </div>
+            </div>
+
+            <div class="page-flip-stage" id="pageFlipStage">
+                <!-- Hoja (frente) -->
+                <div class="page-flip-front">
+                    <div class="book-page right-page">
+                         <div class="book-text-wrapper">
+                            <div class="book-verse-tag" aria-hidden="true">📖</div>
+                            <p id="book-text-front">Cargando cuento...</p>
+                            <div class="book-divider" aria-hidden="true"></div>
+                        </div>
+
+                        <div class="page-number" id="page-counter"></div>
+
+                    </div>
+                </div>
+
+                <!-- Hoja (vuelta) -->
+                <div class="page-flip-back">
+                    <div class="book-page right-page" id="page-back-right">
+                        <div class="book-text-wrapper">
+                            <div class="book-verse-tag" aria-hidden="true">📖</div>
+                            <p id="book-text-back">Cargando cuento...</p>
+                            <div class="book-divider" aria-hidden="true"></div>
+                        </div>
+                        <div class="page-number" id="page-counter-back"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="book-controls">
+            <button onclick="prevPage()" id="btn-prev"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+            <button onclick="nextPage()" id="btn-next">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+
+        <p style="text-align:center; margin-top:14px; opacity:0.75; font-weight:600;">📖 Pasa las páginas con los botones (o toca Siguiente).</p>
+    </div>
+
+    <script>
+        // Historias con contenido infantil + imágenes ilustrativas
+        const biblioteca = {
+            // ======== ANTIGUO TESTAMENTO ========
+            creacion: {
+                titulo: "La Hermosa Creación del Mundo",
+                paginas: [
+{ imagen: "{{ url_for('static', filename='img/se -iso-la-luz.png') }}", texto: "Al principio todo estaba oscuro. Dios dijo con amor: '¡Que haya luz!' Y todo se iluminó. ¡Qué hermoso fue ver la luz!" },
+                    { imagen: "{{ url_for('static', filename='img/imagen-creacion2.png') }}", texto: "El cielo se volvió azul y las aguas formaron océanos. Luego brotaron plantas con flores de muchos colores. ¡Dios hizo todo hermoso!" },
+                    { imagen: "{{ url_for('static', filename='img/sol-luna.png') }}", texto: "Dios puso el sol para el día y la luna con estrellas para la noche. Así, todos podían dormir tranquilos." },
+                    { imagen: "{{ url_for('static', filename='img/creacion-animales-hombre.png') }}", texto: "El mar se llenó de peces, el cielo de pájaros y la tierra de animales. Y al final, Dios creó al ser humano para cuidar su hogar." }
+                ]
+            },
+            moises: {
+                titulo: "El Increíble Viaje de Moisés",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/moises-bebe.png') }}", texto: "Cuando Moisés era bebé, lo cuidaron con cariño. Dios lo protegió y una familia amorosa lo llevó a crecer." },
+                    { imagen:  "{{ url_for('static', filename='img/moises-pueblo.png') }}", texto: "Dios le dio una misión: guiar a su pueblo hacia la libertad. Moisés confiaba en Dios, incluso cuando el camino era difícil." },
+                    { imagen:  "{{ url_for('static', filename='img/imagen2moises.png') }}", texto: "Llegaron al Mar Rojo. ¡No sabían qué hacer! Moisés obedeció, Dios hizo un milagro y abrieron un camino seguro." },
+                    { imagen:  "{{ url_for('static', filename='img/dios-cuida.png') }}", texto: "Dios cuidó de ellos día a día: agua para beber y alimento para seguir. ¡Con Dios, todo es posible!" }
+                ]
+            },
+            jose: {
+                titulo: "José y su Túnica de Colores",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/imagen3tunicadejose.png') }}", texto: "José tenía un corazón alegre. Soñaba y hablaba con Dios. Recibió una túnica especial, llena de colores." },
+                    { imagen: "{{ url_for('static', filename='img/jose-orando.png') }}", texto: "Viajes y sorpresas llegaron. Pero José no olvidó orar. Sabía que Dios estaba con él." },
+                    { imagen: "{{ url_for('static', filename='img/jose-explica-sueño.png') }}", texto: "Un sueño importante apareció. José explicó lo que significaba y ayudó a mucha gente. ¡Dios le dio sabiduría!" },
+                    { imagen: "{{ url_for('static', filename='img/jose-familia.png') }}", texto: "Al final, la familia se reencontró. José perdonó con amor. Así entendemos que Dios puede transformar lo malo en bendición." }
+                ]
+            },
+            david: {
+                titulo: "El Valiente Pastor David",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/david1.png') }}", texto: "David era pastor de ovejas. Cantaba al Señor y cuidaba con ternura. Le gustaba hablarle a Dios." },
+                    { imagen: "{{ url_for('static', filename='img/dabid-goliat.png') }}", texto: "Un gigante llamado Goliat asustaba a todos. Pero David no tenía miedo: 'Dios pelea por nosotros'." },
+                    { imagen: "{{ url_for('static', filename='img/david-y-goliat.png') }}", texto: "David tomó su honda y una piedrita. ¡Corrió con fe! Y el gigante cayó. ¡Dios le dio valor!" },
+                    { imagen: "{{ url_for('static', filename='img/david-rey.png') }}", texto: "Con el tiempo, David reinó con justicia. Esta historia nos recuerda: no importa si eres pequeño, Dios te ayuda." }
+                ]
+            },
+            elias: {
+                titulo: "Elías y los Pájaros Mensajeros",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/elias.png') }}", texto: "Elías era un profeta fiel. En tiempos difíciles, Dios le mostró que nunca lo dejaría solo." },
+                    { imagen:"{{ url_for('static', filename='img/elias1.png') }}", texto: "Dios envió ayuda de una manera sorprendente. Cada día, cuidó a Elías con amor." },
+                    { imagen: "{{ url_for('static', filename='img/elias-orando.png') }}", texto: "Elías oró con fe en el monte. Y Dios mostró su poder con un milagro maravilloso." },
+                    { imagen: "{{ url_for('static', filename='img/elias-subiendo.png') }}", texto: "Al final, Dios se llevó a Elías con gloria. Así aprendemos: los fieles también reciben esperanza." }
+                ]
+            },
+            job: {
+                titulo: "La Súper Paciencia de Job",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/job-1.png') }}", texto: "Job amaba a su familia y daba gracias a Dios por todo lo bueno." },
+                    { imagen: "{{ url_for('static', filename='img/job-2.png') }}", texto: "Luego vinieron tiempos difíciles. Pero Job mantuvo la calma y siguió confiando en Dios." },
+                    { imagen: "{{ url_for('static', filename='img/job-3.png') }}", texto: "Sus amigos no entendían, pero Job fue amable y paciente. Su corazón siguió siendo bueno." },
+                    { imagen: "{{ url_for('static', filename='img/job-4.png') }}", texto: "Dios lo consoló y le devolvió la alegría. Job aprendió que la fe siempre vale la pena." }
+                ]
+            },
+
+            // ======== NUEVO TESTAMENTO ========
+            milagro_agua_vino: {
+                titulo: "Milagro: Agua en vino",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/el aguaenvino.png') }}", texto: "La transformación del agua en vino (Bodas de Caná - Juan 2:1-11)." },
+                    { imagen: "{{ url_for('static', filename='img/milagro-1.png') }}", texto: "Jesús hizo un milagro y mostró su poder con amor." },
+                    { imagen: "{{ url_for('static', filename='img/milagro-1.png') }}", texto: "Las personas se asombraron al ver lo que Jesús hizo." },
+                    { imagen: "{{ url_for('static', filename='img/milagro-2.png') }}", texto: "Aprendemos a confiar en Jesús y creerle a Dios." }
+                ]
+            },
+            milagro_leproso: {
+                titulo: "Milagro: Curación de un leproso",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/leproso-1.png') }}", texto: "Un hombre leproso se acercó con fe. (Mateo 8:1-4; Marcos 1:40-45)." },
+                    { imagen: "{{ url_for('static', filename='img/leproso-1.png') }}", texto: "Le dijo a Jesús: 'Si quieres, puedes limpiarme'." },
+                    { imagen: "{{ url_for('static', filename='img/leproso-2.png') }}", texto: "Jesús lo tocó y le mostró amor y poder: ¡quedó limpio!" },
+                    { imagen: "{{ url_for('static', filename='img/leproso-3.png') }}", texto: "Aprendemos que la fe en Jesús trae sanidad y esperanza." }
+                ]
+            },
+            milagro_paralitico: {
+                titulo: "Milagro: Curación del paralítico de Capernaúm",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/curacion-paralitico.png') }}", texto: "En Capernaúm trajeron a un paralítico. (Marcos 2:1-12)." },
+                    { imagen: "{{ url_for('static', filename='img/curacion-paralitico.png') }}", texto: "Los amigos hicieron todo para que lo vieran: ¡subieron el techo!" },
+                    { imagen:"{{ url_for('static', filename='img/paralitico-3.png') }}", texto: "Jesús le habló con poder: 'Tus pecados te son perdonados'." },
+                    { imagen:"{{ url_for('static', filename='img/paralitico-4.png') }}", texto: "Y luego: 'Levántate'. El hombre se levantó y caminó. ¡Milagro!" }
+                ]
+            },
+            milagro_tormenta: {
+                titulo: "Milagro: La calma de la tormenta",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/varca-1.png') }}", texto: "La noche estaba oscura y el mar se agitó con una gran tormenta." },
+                    { imagen: "{{ url_for('static', filename='img/varca-2.png') }}", texto: "Los discípulos tenían miedo… pero Jesús estaba con ellos." },
+                    { imagen: "{{ url_for('static', filename='img/varca-3.png') }}", texto: "Jesús calmó la tormenta: el viento y las olas obedecieron." },
+                    { imagen: "{{ url_for('static', filename='img/varca-4.png') }}", texto: "Aprendemos a confiar en Jesús, incluso cuando todo parece difícil." }
+                ]
+            },
+            milagro_gadareno: {
+                titulo: "Milagro: Expulsión de demonios del gadareno",
+                paginas: [
+                    { imagen: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=700", texto: "En la región de los gadarenos, un hombre estaba afligido y lleno de fuerzas malas." },
+                    { imagen: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=700", texto: "Cuando Jesús llegó, los demonios reconocieron su autoridad." },
+                    { imagen: "https://images.unsplash.com/photo-1520975958225-0bff3b0cbb6b?w=700", texto: "Jesús los echó fuera, y el hombre quedó libre." },
+                    { imagen: "https://images.unsplash.com/photo-1520697830682-bbb6e85e2b0a?w=700", texto: "Aprendemos que Jesús tiene poder para liberar y restaurar." }
+                ]
+            },
+            milagro_jairo: {
+                titulo: "Milagro: Resurrección de la hija de Jairo",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/jairo-1.png') }}", texto: "Jairo rogó a Jesús: su hija estaba enferma y parecía que ya no habría esperanza." },
+                    { imagen: "{{ url_for('static', filename='img/jairo-2.png') }}", texto: "Jesús llegó con ternura y dijo: 'No temas. Cree solamente'." },
+                    { imagen: "{{ url_for('static', filename='img/jairo-3.png') }}", texto: "Jesús tomó la niña y habló con poder." },
+                    { imagen: "{{ url_for('static', filename='img/jairo-4.png') }}", texto: "La niña volvió a vivir. ¡Fue un gran milagro de amor y esperanza!" }
+                ]
+            },
+            milagro_panes_peces_5000: {
+                titulo: "Milagro: Multiplicación de panes y peces (5.000)",
+                paginas: [
+                    { imagen:"{{ url_for('static', filename='img/peses-1.png') }}", texto: "Jesús habló a una multitud. Luego tomaron pocos panes y peces…" },
+                    { imagen: "{{ url_for('static', filename='img/peses-2.png') }}", texto: "Los discípulos tenían hambre y Jesús quiso ayudar." },
+                    { imagen:"{{ url_for('static', filename='img/peses-3.png') }}", texto: "Jesús bendijo los alimentos: ¡alcanzó para todos! (Mateo 14:13-21)" },
+                    { imagen:"{{ url_for('static', filename='img/peses-4.png') }}", texto: "Sobró comida. Aprendemos que Jesús cuida y provee." }
+                ]
+            },
+            milagro_camina_aguas: {
+                titulo: "Milagro: Jesús camina sobre las aguas",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/camina-1.png') }}", texto: "Después de alimentarlos, Jesús envió a sus discípulos en la barca." },
+                    { imagen: "{{ url_for('static', filename='img/camina-2.png') }}", texto: "El mar se agitó. En la noche, vieron algo extraño…" },
+                    { imagen: "{{ url_for('static', filename='img/camina-3.png') }}", texto: "Jesús caminó sobre las aguas y les dijo: 'No temáis'. (Mateo 14:22-33)" },
+                    { imagen: "{{ url_for('static', filename='img/camina-4.png') }}", texto: "Con fe, Jesús trae paz a nuestro corazón." }
+                ]
+            },
+            milagro_ciego_betsaida: {
+                titulo: "Milagro: Curación del ciego de Betsaida",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/ciego-1.png') }}", texto: "En Betsaida trajeron a un hombre que no veía bien. (Marcos 8:22-26)" },
+                    { imagen: "{{ url_for('static', filename='img/ciego-2.png') }}", texto: "Jesús lo tomó de la mano y comenzó a ayudarle." },
+                    { imagen:"{{ url_for('static', filename='img/ciego-3.png') }}", texto: "Primero pudo ver mejor, luego… ¡todo quedó claro!" },
+                    { imagen: "{{ url_for('static', filename='img/ciego-4.png') }}", texto: "Aprendemos que Jesús puede sanar y renovar." }
+                ]
+            },
+            milagro_lazaro: {
+                titulo: "Milagro: Resurrección de Lázaro",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/lazro-1.png') }}", texto: "Lázaro enfermó y sus hermanas buscaron a Jesús. (Juan 11:1-44)" },
+                    { imagen: "{{ url_for('static', filename='img/lazaro-2.png') }}", texto: "Jesús sabía lo que haría y prometió esperanza." },
+                    { imagen: "{{ url_for('static', filename='img/lazaro-3.png') }}", texto: "Llegó al lugar y dijo: 'Lázaro, ven afuera'." },
+                    { imagen: "{{ url_for('static', filename='img/lazaro-4.png') }}", texto: "Lázaro volvió a vivir. ¡Jesús trae vida!" }
+                ]
+            },
+
+            pedro: {
+                titulo: "Pedro: Valentía y Perdón",
+                paginas: [
+                    { imagen: "https://images.unsplash.com/photo-1520975916090-3105956dac38?w=700", texto: "Pedro era un amigo de Jesús. Aprendía cada día a confiar en Dios." },
+                    { imagen: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=700", texto: "A veces Pedro dudaba, pero Jesús lo seguía ayudando. El amor de Dios lo alcanzaba." },
+                    { imagen: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=700", texto: "Pedro entendió que pedir perdón es parte de volver a Dios con un corazón sincero." },
+                    { imagen: "https://images.unsplash.com/photo-1520697830682-bbb6e85e2b0a?w=700", texto: "Con el tiempo, Pedro fue valiente para hablar de Jesús. ¡Dios lo fortaleció!" }
+                ]
+            },
+
+            pablo: {
+                titulo: "Pablo: De Cálculo a Fe",
+                paginas: [
+                    { imagen: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=700", texto: "Pablo conocía mucho, pero no siempre entendía el amor de Dios. Él necesitaba un cambio." },
+                    { imagen: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=700", texto: "En un momento especial, Jesús lo guió. Pablo quedó listo para aprender la verdad." },
+                    { imagen: "https://images.unsplash.com/photo-1520697830682-bbb6e85e2b0a?w=700", texto: "Pablo empezó a enseñar con cariño. Hablaba de Jesús y animaba a la gente a tener fe." },
+                    { imagen: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=700", texto: "Así, Pablo se volvió un gran ejemplo: cuando Dios dirige, el camino cambia." }
+                ]
+            },
+
+            apocalipsis: {
+                titulo: "Apocalipsis: Esperanza para el Futuro",
+                paginas: [
+                    { imagen: "{{ url_for('static', filename='img/apocalipcis-1.png') }}", texto: "En Apocalipsis aprendemos que Dios sigue cuidando su propósito, aunque parezca difícil." },
+                    { imagen: "{{ url_for('static', filename='img/apocalipcis-2.png') }}", texto: "Hay mensajes para mantenerse firmes. Dios no abandona a quienes confían en Él." },
+                    { imagen: "{{ url_for('static', filename='img/apocalipcis-3.png') }}", texto: "El libro nos recuerda que la justicia de Dios llegará. Su amor vence siempre." },
+                    { imagen: "{{ url_for('static', filename='img/apocalipcis-4.png') }}", texto: "Con esperanza en el corazón, esperamos el final que Dios promete: vida nueva para todos." }
+                ]
+            }
+        };
+
+        let cuentoActual = null;
+        let paginaActual = 0;
+        let flipLock = false;
+
+        function abrirLibro(llaveCuento) {
+            cuentoActual = biblioteca[llaveCuento];
+            paginaActual = 0;
+            flipLock = false;
+
+            document.getElementById('view-menu').style.display = 'none';
+            document.getElementById('view-book').style.display = 'block';
+
+            document.getElementById('current-story-title').innerText = cuentoActual.titulo;
+            actualizarPagina({ animate: false, direction: 'right' });
+        }
+
+        function volverAlMenu() {
+            document.getElementById('view-book').style.display = 'none';
+            document.getElementById('view-menu').style.display = 'block';
+        }
+
+        function setPageContent(paginaIdx) {
+            const paginaData = cuentoActual.paginas[paginaIdx];
+
+            document.getElementById('book-image-static').src = paginaData.imagen;
+            document.getElementById('book-text-front').innerText = paginaData.texto;
+            document.getElementById('book-text-back').innerText = paginaData.texto;
+
+            const totalPaginas = cuentoActual.paginas.length;
+            document.getElementById('page-counter').innerText = `Página ${paginaIdx + 1} de ${totalPaginas}`;
+            document.getElementById('page-counter-back').innerText = `Página ${paginaIdx + 1} de ${totalPaginas}`;
+        }
+
+        function actualizarPagina({ animate = true, direction = 'right' } = {}) {
+            if (!cuentoActual) return;
+
+            if (!animate) {
+                setPageContent(paginaActual);
+                document.getElementById('btn-prev').disabled = paginaActual === 0;
+                document.getElementById('btn-next').disabled = paginaActual === cuentoActual.paginas.length - 1;
+                return;
+            }
+
+            if (flipLock) return;
+            flipLock = true;
+
+            const containerElement = document.getElementById('book-container');
+            const stage = document.getElementById('pageFlipStage');
+
+            containerElement.classList.remove('page-flip-turn-right', 'page-flip-turn-left');
+            void stage.offsetWidth;
+
+            const cls = direction === 'left' ? 'page-flip-turn-left' : 'page-flip-turn-right';
+            containerElement.classList.add(cls);
+
+            const midTimeMs = 230;
+            setTimeout(() => {
+                setPageContent(paginaActual);
+            }, midTimeMs);
+
+            setTimeout(() => {
+                document.getElementById('btn-prev').disabled = paginaActual === 0;
+                document.getElementById('btn-next').disabled = paginaActual === cuentoActual.paginas.length - 1;
+                flipLock = false;
+                containerElement.classList.remove('page-flip-turn-right', 'page-flip-turn-left');
+            }, 480);
+        }
+
+        function nextPage() {
+            if (!cuentoActual) return;
+            if (paginaActual < cuentoActual.paginas.length - 1) {
+                paginaActual++;
+                actualizarPagina({ animate: true, direction: 'right' });
+            }
+        }
+
+        function prevPage() {
+            if (!cuentoActual) return;
+            if (paginaActual > 0) {
+                paginaActual--;
+                actualizarPagina({ animate: true, direction: 'left' });
+            }
+        }
+
+    </script>
+</body>
+</html>
+

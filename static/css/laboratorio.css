@@ -1,0 +1,137 @@
+/* Laboratorio IA - estilos */
+
+:root {
+  --mixer-bg: rgba(10, 10, 14, 0.95);
+  --mixer-border: rgba(212, 175, 55, 0.35);
+  --mixer-accent: #D4AF37;
+}
+
+.laboratorio-page {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.laboratorio-col {
+  min-width: 320px;
+}
+
+.laboratorio-card {
+  border-top: 6px solid var(--accent-color);
+  box-shadow: 0 18px 46px rgba(74,21,37,0.10);
+}
+
+.laboratorio-audio {
+  width: 100%;
+}
+
+/* Overlay de carga */
+.laboratorio-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.laboratorio-overlay-card {
+  width: min(560px, 96vw);
+  background: rgba(20,20,25,0.96);
+  border: 1px solid var(--mixer-border);
+  border-radius: 18px;
+  color: #fff;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+  padding: 28px 22px;
+  text-align: center;
+}
+
+.laboratorio-spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 5px solid rgba(212,175,55,0.18);
+  border-top-color: var(--mixer-accent);
+  animation: laboratorio-spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes laboratorio-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Mesa de mezclas oscuro estilo Moises */
+.mixer-dark {
+  background: var(--mixer-bg);
+  border: 1px solid var(--mixer-border);
+  border-radius: 18px;
+  padding: 18px;
+  color: #fff;
+}
+
+.mixer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.mixer-status {
+  font-weight: 800;
+  color: rgba(212,175,55,0.95);
+}
+
+.btn-master {
+  background: linear-gradient(180deg, rgba(212,175,55,0.95), rgba(74,21,37,0.75));
+  border: 1px solid rgba(212,175,55,0.6);
+  color: #24120a;
+  font-weight: 900;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+.mixer-track {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(212,175,55,0.18);
+  border-radius: 16px;
+  padding: 12px 12px;
+  margin-top: 12px;
+}
+
+.mixer-track-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.mixer-track-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  color: rgba(212,175,55,0.95);
+}
+
+.btn-mute {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(212,175,55,0.25);
+  color: rgba(255,255,255,0.92);
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-weight: 800;
+}
+
+.mixer-slider {
+  width: 100%;
+  accent-color: var(--mixer-accent);
+}
+
+@media (max-width: 992px) {
+  .laboratorio-col { min-width: 0; }
+}
+

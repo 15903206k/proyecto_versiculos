@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palabra de Vida - Versículos Bíblicos</title>
+    
+    <!-- Vinculamos los estilos personalizados -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Tipografía elegante de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Librería FontAwesome para los íconos de la cruz y la biblia -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="hero">
+        <!-- Ícono izquierdo: Biblia -->
+        <i class="fa-solid fa-book-bible corner-icon left-icon"></i>
+        
+        <div class="hero-content">
+            <h1>El Evangelio de Jesús</h1>
+            <p>"Yo soy el camino, y la verdad, y la vida"</p>
+        </div>
+        
+        <!-- Ícono derecho: Cruz -->
+        <i class="fa-solid fa-cross corner-icon right-icon"></i>
+    </header>
+
+    <section class="sub-hero-banner" aria-label="Banner de bienvenida">
+        <div class="sub-hero-overlay" aria-hidden="true"></div>
+        <div class="sub-hero-content">
+            <h2>Bienvenido a la Palabra</h2>
+        </div>
+    </section>
+
+    <main class="container">
+        <section class="interactive-menu" aria-label="Accesos rápidos">
+            <a class="menu-btn kids-btn" href="/ninos">
+
+                <i class="fa-solid fa-book-open-reader" aria-hidden="true"></i> Libro Infantil
+            </a>
+            <a class="menu-btn trivia-btn" href="/trivia">
+                <i class="fa-solid fa-gamepad" aria-hidden="true"></i> Trivia Bíblica
+            </a>
+            <a class="menu-btn map-btn" href="/mapa">
+                <i class="fa-solid fa-map" aria-hidden="true"></i> Mapa Interactivo
+            </a>
+            <a class="menu-btn alabanzas-btn" href="/alabanzas">
+                <i class="fa-solid fa-music" aria-hidden="true"></i> Alabanzas
+            </a>
+            <a class="menu-btn" href="/descargar" style="background: linear-gradient(180deg, rgba(212,175,55,0.98), rgba(139,111,0,0.95)); color: #2b1a10; border: 1px solid rgba(212, 175, 55, 0.45); font-weight: 800;">
+                <i class="fa-solid fa-download" aria-hidden="true"></i> Descargar Alabanzas
+            </a>
+
+            <a class="menu-btn" href="/mis_alabanzas" style="background: linear-gradient(180deg, rgba(74,21,37,0.95), rgba(74,21,37,0.85)); color: var(--accent-color); border-radius: 999px; border: 1px solid rgba(212,175,55,0.45); font-weight: 800; padding: 12px 18px;">
+                <i class="fa-solid fa-headphones" aria-hidden="true"></i> Mis Descargas
+            </a>
+
+            <a class="menu-btn" href="/laboratorio" style="background: linear-gradient(180deg, rgba(74,21,37,0.95), rgba(74,21,37,0.85)); color: var(--accent-color); border-radius: 999px; border: 1px solid rgba(212,175,55,0.45); font-weight: 800; padding: 12px 18px;">
+              <i class="fa-solid fa-robot" aria-hidden="true"></i> Laboratorio IA
+            </a>
+        </section>
+
+        <section class="reflection-video" aria-label="Reflexión en video">
+            <div class="reflection-video-inner">
+                <h2 class="reflection-title">Reflexión en Video</h2>
+
+                <div class="reflection-frame" role="group" aria-label="Reproductor de video">
+                    <video
+                        class="reflection-video-el"
+                        controls
+                        preload="metadata"
+                        playsinline
+                    >
+                        <source src="{{ url_for('static', filename='pablosierra-piensasenmi.mp4.placeholder') }}" type="video/mp4">
+                        Tu navegador no soporta la reproducción de video.
+                    </video>
+                </div>
+
+            </div>
+        </section>
+
+        {% for categoria, versiculos in categorias.items() %}
+
+            <section class="category-section">
+                <h2 class="category-title">{{ categoria }}</h2>
+                <div class="cards-grid">
+                    {% for v in versiculos %}
+                        <div class="card">
+                            <div class="card-top">
+                                <div class="card-icon" aria-hidden="true">
+                                    <span class="card-icon-inner">✝</span>
+                                </div>
+                            </div>
+
+                            <p class="card-text">"{{ v.texto }}"</p>
+
+                            <div class="card-bottom">
+                                <span class="card-citation">{{ v.cita }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endfor %}
+</main>
+
+
+    <footer>
+        <p>&copy; 2026 - Edificados en Su Palabra</p>
+    </footer>
+
+    <!-- Botón flotante del chatbot (icono Biblia) -->
+    <div class="chat-btn" onclick="toggleChat()" aria-label="Abrir chat">
+        <i class="fa-solid fa-book-bible" aria-hidden="true"></i>
+    </div>
+
+
+    <!-- Ventana del chat -->
+    <div class="chat-window" id="chatWindow" role="dialog" aria-modal="true" aria-label="Guía Bíblico">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <i class="fa-solid fa-book-bible chat-header-icon" aria-hidden="true"></i>
+                <h3>Guía Bíblica</h3>
+            </div>
+            <button class="chat-close" onclick="toggleChat()" aria-label="Cerrar chat"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+
+        <div class="chat-body" id="chatBody">
+            <div class="bot-msg">
+                ¡Bienvenido! ¿Qué necesitas hoy sobre la Biblia? Escribe un tema (ej: fe, amor, miedo, paz, perdón, tristeza). 
+            </div>
+        </div>
+
+
+        <div class="chat-footer">
+            <input type="text" id="userInput" placeholder="Escribe tu tema aquí..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            const chat = document.getElementById('chatWindow');
+            chat.style.display = chat.style.display === 'none' || chat.style.display === '' ? 'flex' : 'none';
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function appendMessage(html, isUser) {
+            const chatBody = document.getElementById('chatBody');
+            const wrapper = document.createElement('div');
+            wrapper.className = isUser ? 'user-msg' : 'bot-msg';
+            wrapper.innerHTML = html;
+            chatBody.appendChild(wrapper);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = (input.value || '').trim();
+            if (!message) return;
+
+            appendMessage(escapeHtml(message), true);
+            input.value = '';
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensaje: message })
+            })
+            .then(r => r.json())
+            .then(data => {
+                const formatText = String(data.respuesta || '').replace(/\n/g, '<br>');
+                appendMessage(formatText, false);
+            })
+            .catch(() => {
+                appendMessage('Ocurrió un error al conectar con el servidor.', false);
+            });
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '<')
+                .replace(/>/g, '>')
+                .replace(/"/g, '"')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+</body>
+</html>
+

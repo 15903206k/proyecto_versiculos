@@ -1,0 +1,940 @@
+:root {
+    --primary-color: #4A1525; /* Vino/Bordó solemne */
+    --accent-color: #D4AF37;  /* Dorado elegante */
+    --bg-color: #FDFBF7;      /* Blanco crema suave */
+    --card-bg: #FFFFFF;
+    --text-dark: #2C2C2C;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+/* Encabezado Principal */
+.hero {
+    background: linear-gradient(rgba(74, 21, 37, 0.85), rgba(74, 21, 37, 0.95)), url('https://images.unsplash.com/photo-1504052434569-70ad585e51c7?q=80&w=1200') no-repeat center/cover;
+    color: white;
+    text-align: center;
+    padding: 60px 20px;
+    border-bottom: 4px solid var(--accent-color);
+
+    /* Para posicionar íconos en esquinas */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Íconos decorativos en esquinas de la portada */
+.corner-icon {
+    position: absolute;
+    top: 22px;
+    font-size: 2.2rem;
+    color: var(--accent-color);
+    opacity: 0.95;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+    pointer-events: none;
+    z-index: 2;
+}
+
+.left-icon {
+    left: 22px;
+}
+
+.right-icon {
+    right: 22px;
+}
+
+@media (max-width: 520px) {
+    .corner-icon { font-size: 1.8rem; top: 16px; left: 14px; right: 14px; }
+}
+
+
+.hero h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-style: italic;
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+/* Contenedor */
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Secciones de Categorías */
+.category-section {
+    margin-bottom: 50px;
+}
+
+.category-title {
+    font-family: 'Cinzel', serif;
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #EAE6DF;
+    padding-bottom: 5px;
+}
+
+/* Menú de accesos rápidos */
+.interactive-menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin: 30px 0 40px;
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    box-shadow: 0 14px 40px rgba(74, 21, 37, 0.10);
+    transform: translateZ(0);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-btn i {
+    font-size: 1.1rem;
+}
+
+.menu-btn::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background: radial-gradient(300px circle at 15% 0%, rgba(212,175,55,0.40), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.menu-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 52px rgba(74, 21, 37, 0.18);
+}
+
+.menu-btn:hover::before {
+    opacity: 1;
+}
+
+/* Variantes */
+.kids-btn {
+    background: linear-gradient(180deg, #87CEEB, #63BFE8);
+    color: #18303A;
+}
+
+.trivia-btn {
+    background: linear-gradient(180deg, #D4AF37, #C79B1E);
+    color: var(--primary-color);
+}
+
+.map-btn {
+    background: linear-gradient(180deg, rgba(74, 21, 37, 0.95), rgba(74, 21, 37, 0.85));
+    color: var(--accent-color);
+}
+
+.map-btn::after {
+    content: "Clic para explorar";
+}
+
+.alabanzas-btn {
+    background: linear-gradient(180deg, #D4AF37, #8B6F00);
+    color: #2b1a10;
+}
+
+.alabanzas-btn:hover {
+    box-shadow: 0 18px 52px rgba(212,175,55,0.25);
+} 
+
+.map-btn::after {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Cinzel', serif;
+    font-size: 0.92rem;
+    color: rgba(212,175,55,0.95);
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    pointer-events: none;
+}
+
+.map-btn:hover::after {
+    opacity: 1;
+}
+
+@media (max-width: 520px) {
+    .map-btn::after { display: none; }
+}
+
+/* Grilla de Tarjetas */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+
+/* Tarjeta Individual (Card) */
+.card {
+    background: linear-gradient(180deg, rgba(212, 175, 55, 0.14), rgba(255,255,255,1));
+    border-radius: 16px;
+    padding: 26px 24px;
+    box-shadow:
+        0 14px 40px rgba(74, 21, 37, 0.10),
+        inset 0 1px 0 rgba(255,255,255,0.6);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-top: 6px solid var(--accent-color);
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Brillo/overlay al hacer hover */
+.card::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background: radial-gradient(600px circle at 15% -10%, rgba(212, 175, 55, 0.32), transparent 45%);
+    opacity: 0;
+    transition: opacity 0.28s ease;
+    pointer-events: none;
+}
+
+.card::after {
+    content: "";
+    position: absolute;
+    left: -25%;
+    top: -40%;
+    width: 120%;
+    height: 120%;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
+    transform: translateX(-30%);
+    opacity: 0;
+    transition: opacity 0.28s ease, transform 0.6s ease;
+    pointer-events: none;
+}
+
+.card:hover {
+    transform: translateY(-7px);
+    box-shadow:
+        0 18px 46px rgba(74, 21, 37, 0.14),
+        inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+.card:hover::after {
+    opacity: 1;
+    transform: translateX(30%);
+}
+
+/* Icono premium */
+.card-top {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 12px;
+}
+
+.card-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(212, 175, 55, 0.25), rgba(74, 21, 37, 0.06));
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    box-shadow:
+        0 10px 26px rgba(212, 175, 55, 0.18),
+        inset 0 1px 0 rgba(255,255,255,0.55);
+    flex: 0 0 auto;
+}
+
+.card-icon-inner {
+    font-size: 1.55rem;
+    color: var(--accent-color);
+    text-shadow: 0 10px 30px rgba(212, 175, 55, 0.22);
+    transform: translateY(-1px);
+}
+
+/* Texto */
+.card-text {
+    font-size: 1.06rem;
+    font-style: italic;
+    margin: 0;
+    color: #3b3b3b;
+    letter-spacing: 0.1px;
+}
+
+/* Cita como pill */
+.card-bottom {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.card-citation {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 0.92rem;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(212, 175, 55, 0.10);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+}
+
+@media (max-width: 520px) {
+    .card { padding: 22px 18px; }
+    .card-text { font-size: 1rem; }
+    .card-icon { width: 50px; height: 50px; }
+}
+
+/* ================== BANNER SECUNDARIO (HERO) ================== */
+.sub-hero-banner {
+    width: 100%;
+    height: 170px;
+    margin-top: -22px; /* se pega visualmente debajo del header */
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(212,175,55,0.25);
+    background: url('https://source.unsplash.com/1600x400/?nature,sunrise') no-repeat center/cover;
+}
+
+.sub-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+}
+
+.sub-hero-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    text-align: center;
+}
+
+.sub-hero-content h2 {
+    font-family: 'Cinzel', serif;
+    color: #fff;
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    letter-spacing: 1px;
+    text-shadow: 0 14px 40px rgba(0,0,0,0.35);
+}
+
+@media (max-width: 520px) {
+    .sub-hero-banner { height: 150px; }
+}
+
+/* ================== REFLEXIÓN EN VIDEO ================== */
+.reflection-video {
+    margin: 34px 0 46px;
+}
+
+.reflection-video-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 10px;
+    text-align: center;
+}
+
+.reflection-title {
+    font-family: 'Cinzel', serif;
+    color: var(--primary-color);
+    font-size: 1.9rem;
+    margin-bottom: 14px;
+}
+
+.reflection-frame {
+    background: linear-gradient(180deg, rgba(212,175,55,0.12), rgba(255,255,255,1));
+    border: 1px solid rgba(212, 175, 55, 0.38);
+    border-top: 6px solid var(--accent-color);
+    border-radius: 16px;
+    box-shadow:
+        0 18px 46px rgba(74, 21, 37, 0.10),
+        inset 0 1px 0 rgba(255,255,255,0.65);
+    padding: 14px;
+}
+
+.reflection-iframe {
+    width: 100%;
+    height: min(56vw, 520px);
+    border: 0;
+    border-radius: 12px;
+    display: block;
+}
+
+/* Video local MP4 (reemplazo del iframe) */
+.reflection-video-el {
+    width: 100%;
+    height: min(56vw, 520px);
+    border: 0;
+    border-radius: 12px;
+    display: block;
+    background: rgba(0,0,0,0.06);
+}
+
+@media (max-width: 520px) {
+    .reflection-video { margin: 24px 0 36px; }
+    .reflection-title { font-size: 1.6rem; }
+    .reflection-frame { padding: 12px; }
+    .reflection-iframe { height: 42vh; min-height: 240px; }
+    .reflection-video-el { height: 42vh; min-height: 240px; }
+}
+
+
+/* Pie de Página */
+footer {
+    text-align: center;
+
+    padding: 30px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.9rem;
+    margin-top: 60px;
+}
+
+/* ================== ESTILOS COMUNES (ENLACES/BOTONES) ================== */
+.back-btn {
+
+    display: inline-block;
+    margin: 20px;
+    padding: 10px 18px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 22px;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 10px 26px rgba(74, 21, 37, 0.18);
+}
+
+/* ================== ESTILOS PARA MAPA INTERACTIVO ================== */
+.map-page {
+    max-width: 1050px;
+    margin: 10px auto 60px;
+    padding: 0 20px;
+}
+
+.map-title {
+    font-family: 'Cinzel', serif;
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin: 10px 0 6px;
+    text-align: center;
+}
+
+.map-subtitle {
+    text-align: center;
+    margin-bottom: 18px;
+    color: var(--text-dark);
+    opacity: 0.9;
+}
+
+.map-card {
+    background: linear-gradient(180deg, rgba(212,175,55,0.10), rgba(255,255,255,1));
+    border: 1px solid rgba(212,175,55,0.35);
+    border-top: 6px solid var(--accent-color);
+    border-radius: 18px;
+    box-shadow: 0 18px 46px rgba(74, 21, 37, 0.10);
+    padding: 18px;
+}
+
+.map-svg-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.map-svg {
+    width: 100%;
+    height: auto;
+    max-width: 980px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.place {
+    transition: transform 0.18s ease;
+}
+
+.place:hover {
+    transform: scale(1.03);
+}
+
+.place-dot {
+    fill: var(--primary-color);
+    stroke: var(--accent-color);
+    stroke-width: 4;
+}
+
+.place-pulse {
+    fill: rgba(212, 175, 55, 0.22);
+    animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.65; transform: scale(0.92); }
+    60% { opacity: 0.15; transform: scale(1.12); }
+    100% { opacity: 0.0; transform: scale(1.20); }
+}
+
+.place-label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    fill: #7a4a0b;
+    paint-order: stroke;
+    stroke: rgba(255,255,255,0.75);
+    stroke-width: 4px;
+    font-size: 18px;
+}
+
+.map-hint {
+    margin-top: 14px;
+    text-align: center;
+    color: rgba(44,44,44,0.85);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.35);
+    padding: 18px;
+    z-index: 2000;
+}
+
+.modal-dialog {
+    width: min(520px, 100%);
+    background: white;
+    border-radius: 16px;
+    border: 2px solid rgba(212,175,55,0.55);
+    box-shadow: 0 18px 60px rgba(0,0,0,0.25);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.modal-title {
+    font-family: 'Cinzel', serif;
+    color: var(--accent-color);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.modal-close {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(212,175,55,0.55);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    background: rgba(255,255,255,0.18);
+}
+
+.modal-body {
+    padding: 16px;
+    font-size: 0.98rem;
+    color: #2c2c2c;
+    line-height: 1.5;
+}
+
+/* ================== ESTILOS DEL CHATBOT ================== */
+
+/* ========= AJUSTES ESPECÍFICOS PARA EL LIBRO (página derecha y ancho de texto) ========= */
+
+/* Forzar que el área derecha ocupe todo el ancho disponible y que el texto no quede encogido */
+.page-flip-front .book-page.right-page,
+.page-flip-back .book-page.right-page,
+.book-page.right-page {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important; /* el padding lo controlará el wrapper del texto */
+}
+
+/* Wrapper directo del texto: ancho completo, sin max-width, con padding uniforme */
+.book-page.right-page .book-text-wrapper {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+}
+
+/* Asegurar que el elemento real del texto use todo el ancho */
+.book-page.right-page #book-text-front,
+.book-page.right-page #book-text-back {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Evitar que tags/divisores empujen o limiten ancho */
+.book-page.right-page .book-verse-tag,
+.book-page.right-page .book-divider {
+    max-width: none !important;
+}
+
+/* ================== SCROLL VERTICAL PARA TEXTO DEL LIBRO ==================
+   Permite textos largos sin romper el ancho y muestra scroll fino estilo “hoja”. */
+
+/* Limitar el contenedor del texto y activar scroll */
+.book-page.right-page .book-text-wrapper {
+    height: 100% !important;
+    min-height: 340px; /* coincide con la altura del libro */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Asegurar que el texto real no desborde fuera del área con scroll */
+.book-page.right-page #book-text-front,
+.book-page.right-page #book-text-back {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Scroll fino (Chrome/Edge/Safari) */
+.book-page.right-page .book-text-wrapper::-webkit-scrollbar {
+    width: 12px;
+}
+
+.book-page.right-page .book-text-wrapper::-webkit-scrollbar-track {
+    background: rgba(74, 21, 37, 0.06);
+    border-radius: 999px;
+}
+
+.book-page.right-page .book-text-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.35);
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.book-page.right-page .book-text-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 175, 55, 0.55);
+}
+
+/* Scroll fino para el texto directamente si el navegador lo aplica ahí */
+.book-page.right-page #book-text-front::-webkit-scrollbar,
+.book-page.right-page #book-text-back::-webkit-scrollbar {
+    width: 12px;
+}
+
+/* Mensaje flotante al pasar el mouse por el scroll (solo WebKit/Blink) */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .book-page.right-page .book-text-wrapper,
+    .book-page.right-page #book-text-front,
+    .book-page.right-page #book-text-back {
+        position: relative;
+    }
+
+    .book-page.right-page .book-text-wrapper::after,
+    .book-page.right-page #book-text-front::after,
+    .book-page.right-page #book-text-back::after {
+        content: "Desliza hacia abajo";
+        position: absolute;
+        top: 10px;
+        right: 18px;
+        transform: translateY(-6px);
+        background: rgba(74, 21, 37, 0.95);
+        color: #fff;
+        border: 1px solid rgba(212, 175, 55, 0.55);
+        padding: 8px 10px;
+        border-radius: 999px;
+        font-family: 'Cinzel', serif;
+        font-size: 0.95rem;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        z-index: 5;
+    }
+
+    .book-page.right-page .book-text-wrapper:hover::after,
+    .book-page.right-page #book-text-front:hover::after,
+    .book-page.right-page #book-text-back:hover::after {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.book-page.right-page #book-text-front::-webkit-scrollbar-track,
+.book-page.right-page #book-text-back::-webkit-scrollbar-track {
+    background: rgba(74, 21, 37, 0.06);
+    border-radius: 999px;
+}
+
+.book-page.right-page #book-text-front::-webkit-scrollbar-thumb,
+.book-page.right-page #book-text-back::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.35);
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.book-page.right-page #book-text-front::-webkit-scrollbar-thumb:hover,
+.book-page.right-page #book-text-back::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 175, 55, 0.55);
+}
+
+
+
+
+/* Botón flotante */
+.chat-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: var(--primary-color);
+    color: var(--accent-color);
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    z-index: 1000;
+}
+
+.chat-btn i {
+    filter: drop-shadow(0 10px 14px rgba(212,175,55,0.22));
+}
+
+.chat-btn:hover {
+    transform: translateY(-3px) scale(1.06);
+    box-shadow: 0 14px 34px rgba(74, 21, 37, 0.35);
+}
+
+.chat-btn::after {
+    content: "¿Quieres un versículo?";
+    position: absolute;
+    right: 86px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(74, 21, 37, 0.98);
+    color: var(--accent-color);
+    border: 1px solid rgba(212,175,55,0.55);
+    padding: 10px 12px;
+    border-radius: 999px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.chat-btn:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(-4px);
+}
+
+/* Ventana principal del chat */
+.chat-window {
+    position: fixed;
+    bottom: 110px;
+    right: 30px;
+    width: 350px;
+    height: 480px;
+    background: var(--bg-color);
+    border-radius: 14px;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.22);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    border: 2px solid rgba(212, 175, 55, 0.55);
+    z-index: 1000;
+}
+
+/* Cabecera del chat */
+.chat-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Cinzel', serif;
+}
+
+.chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-header-icon {
+    color: var(--accent-color);
+    font-size: 1.25rem;
+    filter: drop-shadow(0 8px 14px rgba(212,175,55,0.25));
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--accent-color);
+}
+
+.chat-header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.chat-header button:hover {
+    color: var(--accent-color);
+}
+
+/* Área de mensajes */
+.chat-body {
+
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: linear-gradient(180deg, rgba(212,175,55,0.08), rgba(255,255,255,0.2));
+}
+
+/* Globos */
+.bot-msg, .user-msg {
+    padding: 12px 14px;
+    border-radius: 16px;
+    max-width: 85%;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    line-height: 1.35;
+    word-wrap: break-word;
+}
+
+.bot-msg {
+    background-color: white;
+    color: var(--text-dark);
+    align-self: flex-start;
+    border: 1px solid rgba(234, 230, 223, 1);
+}
+
+.user-msg {
+    background-color: var(--primary-color);
+    color: white;
+    align-self: flex-end;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+/* Área escribir */
+.chat-footer {
+    display: flex;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(255,255,255,0.9);
+    border-top: 1px solid rgba(234, 230, 223, 1);
+}
+
+.chat-footer input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 999px;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+}
+
+.chat-footer input:focus {
+    border-color: rgba(212, 175, 55, 0.9);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.18);
+}
+
+.chat-footer button {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+.chat-footer button:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 420px) {
+    .chat-window {
+        width: calc(100vw - 24px);
+        right: 12px;
+        bottom: 110px;
+    }
+
+    .chat-btn {
+        right: 12px;
+        bottom: 26px;
+    }
+}

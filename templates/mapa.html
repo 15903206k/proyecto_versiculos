@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa Interactivo - Israel Antiguo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Volver al Inicio</a>
+
+  <main class="map-page">
+    <h1 class="map-title"><i class="fa-solid fa-map"></i> Mapa Interactivo (Israel Antiguo)</h1>
+    <p class="map-subtitle">Haz clic en los lugares para ver una breve explicación bíblica.</p>
+
+    <section class="map-card">
+      <!-- Mapa simplificado en SVG (sin dependencias externas) -->
+      <div class="map-svg-wrap" role="application" aria-label="Mapa interactivo de Israel">
+        <svg id="mapSvg" viewBox="0 0 1000 650" class="map-svg" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#F4E7C3" />
+              <stop offset="100%" stop-color="#E6D29B" />
+            </linearGradient>
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#4A1525" flood-opacity="0.18" />
+            </filter>
+          </defs>
+
+          <!-- Costa / tierra (forma aproximada) -->
+          <path
+            filter="url(#shadow)"
+            d="M170,120 C220,60 320,60 400,100 C470,135 520,155 585,150 C665,145 730,185 770,240 C820,310 850,365 845,430 C840,500 770,555 690,565 C620,575 560,540 500,525 C435,508 400,535 340,520 C275,503 220,465 205,410 C185,335 115,250 170,120 Z"
+            fill="url(#land)" stroke="#B88A2B" stroke-width="4" opacity="0.95" />
+
+          <!-- Mar de Galilea (zona) -->
+          <path
+            d="M520,235 C560,210 630,212 665,245 C700,280 700,330 665,360 C625,395 555,390 525,350 C500,315 490,260 520,235 Z"
+            fill="#BFE6FF" stroke="#3B82A6" stroke-width="3" opacity="0.95" />
+          <text x="600" y="312" font-size="22" text-anchor="middle" fill="#1F4A63" style="font-family:Poppins, sans-serif; font-weight:600;">Mar de Galilea</text>
+
+          <!-- Mar Muerto (zona) -->
+          <path
+            d="M420,470 C470,450 540,452 580,480 C620,505 625,545 595,565 C550,595 470,600 430,575 C395,555 385,495 420,470 Z"
+            fill="#A9D6A8" stroke="#2F6B3C" stroke-width="3" opacity="0.85" />
+          <text x="505" y="535" font-size="22" text-anchor="middle" fill="#1F4A63" style="font-family:Poppins, sans-serif; font-weight:600;">Mar Muerto</text>
+
+          <!-- Puntos clickeables -->
+          <g class="place" data-place="Jerusalén" data-text="Jerusalén: Ciudad santa donde Jesús enseñó y donde sucedieron eventos centrales del Evangelio (pasión, muerte y resurrección).">
+            <circle cx="470" cy="270" r="18" class="place-dot" />
+            <circle cx="470" cy="270" r="30" class="place-pulse" />
+            <text x="470" y="250" text-anchor="middle" class="place-label">Jerusalén</text>
+          </g>
+
+          <g class="place" data-place="Belén" data-text="Belén: Lugar del nacimiento de Jesús, conocido por la profecía mesiánica y la adoración de los pastores. (Mateo 2 y Lucas 2).">
+            <circle cx="455" cy="315" r="16" class="place-dot" />
+            <circle cx="455" cy="315" r="26" class="place-pulse" />
+            <text x="455" y="295" text-anchor="middle" class="place-label">Belén</text>
+          </g>
+
+          <g class="place" data-place="Mar de Galilea" data-text="Mar de Galilea: Región donde Jesús realizó señales, calmó la tempestad y llamó a discípulos junto al mar.">
+            <circle cx="610" cy="295" r="16" class="place-dot" />
+            <circle cx="610" cy="295" r="26" class="place-pulse" />
+            <text x="610" y="275" text-anchor="middle" class="place-label">Mar de Galilea</text>
+          </g>
+
+          <g class="place" data-place="Nazaret" data-text="Nazaret: Ciudad donde Jesús creció y comenzó su ministerio. Muchos lo conocían allí. (Lucas 4).">
+            <circle cx="585" cy="230" r="16" class="place-dot" />
+            <circle cx="585" cy="230" r="26" class="place-pulse" />
+            <text x="585" y="210" text-anchor="middle" class="place-label">Nazaret</text>
+          </g>
+
+          <g class="place" data-place="Mar Muerto" data-text="Mar Muerto: Zona asociada a la región del desierto y a experiencias del pueblo. En el contexto bíblico es un lugar de gran contraste y salinidad.">
+            <circle cx="505" cy="535" r="16" class="place-dot" />
+            <circle cx="505" cy="535" r="26" class="place-pulse" />
+            <text x="505" y="515" text-anchor="middle" class="place-label">Mar Muerto</text>
+          </g>
+        </svg>
+      </div>
+
+      <p class="map-hint"><i class="fa-solid fa-hand-pointer"></i> Consejo: toca/da clic en los puntos para abrir la ventana explicativa.</p>
+    </section>
+
+    <!-- Modal -->
+    <div id="mapModal" class="modal" aria-hidden="true">
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-label="Información del lugar">
+        <div class="modal-header">
+          <div class="modal-title" id="modalTitle">Lugar</div>
+          <button id="modalClose" class="modal-close" type="button" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="modalBody">...</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const modal = document.getElementById('mapModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const closeBtn = document.getElementById('modalClose');
+
+    function openModal(place, text) {
+      modalTitle.textContent = place;
+      modalBody.textContent = text;
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    document.querySelectorAll('.place').forEach(el => {
+      el.addEventListener('click', () => {
+        openModal(el.dataset.place, el.dataset.text);
+      });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Estado inicial
+    closeModal();
+  </script>
+</body>
+</html>
+

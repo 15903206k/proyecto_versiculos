@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Bíblica - Gimnasio de la Fe</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- ESTILOS EXCLUSIVOS PARA TRIVIA (ELEGANTE + DIDÁCTICA) --- */
+        .trivia-bg-2 {
+            background: radial-gradient(800px circle at 10% 10%, rgba(212,175,55,0.18), transparent 55%),
+                        radial-gradient(900px circle at 90% 20%, rgba(74,21,37,0.12), transparent 60%),
+                        var(--bg-color);
+            min-height: 100vh;
+        }
+
+        .trivia-wrapper {
+            max-width: 980px;
+            margin: 28px auto 70px;
+            padding: 0 18px;
+        }
+
+        .category-panel {
+            background: white;
+            border-radius: 18px;
+            padding: 36px 28px;
+            box-shadow: 0 18px 60px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.35);
+        }
+
+        .trivia-main-title {
+            font-family: 'Cinzel', serif;
+            color: var(--primary-color);
+            font-size: 2.6rem;
+            margin-bottom: 8px;
+        }
+
+        .trivia-subtitle {
+            color: #666;
+            margin-bottom: 26px;
+            font-size: 1.08rem;
+        }
+
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 12px;
+        }
+
+        .select-card {
+            background: linear-gradient(145deg, #ffffff, #fcfaf7);
+            border: 2px solid rgba(234,230,223,1);
+            border-radius: 16px;
+            padding: 28px 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            user-select: none;
+            box-shadow: 0 12px 30px rgba(74,21,37,0.06);
+        }
+
+        .select-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(212,175,55,0.9);
+            box-shadow: 0 18px 48px rgba(212,175,55,0.16);
+        }
+
+        .select-card i {
+            font-size: 2.8rem;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .select-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .select-card p {
+            color: #6b6b6b;
+            font-size: 0.98rem;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 18px 60px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border-top: 6px solid var(--primary-color);
+        }
+
+        .game-header {
+            padding: 18px 22px;
+            background: linear-gradient(180deg, rgba(212,175,55,0.14), rgba(255,255,255,1));
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .level-badge {
+            background: var(--primary-color);
+            color: var(--accent-color);
+            padding: 7px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            white-space: nowrap;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 7px;
+            background: #eef0f2;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), #cfa027);
+            width: 0%;
+            transition: width 0.35s ease;
+        }
+
+        .game-body {
+            padding: 26px 22px 18px;
+        }
+
+        .question-image-container {
+            width: 100%;
+            height: 230px;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+            border: 1px solid rgba(212,175,55,0.25);
+            background: #fff;
+        }
+
+        .question-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .question-text {
+            font-size: 1.35rem;
+            color: var(--text-dark);
+            font-weight: 700;
+            line-height: 1.45;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .options-vertical-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-row {
+            background: #fff;
+            border: 2px solid rgba(226,232,240,1);
+            padding: 16px 16px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            text-align: left;
+            font-family: 'Poppins', sans-serif;
+            user-select: none;
+        }
+
+        .option-row:hover:not(:disabled) {
+            border-color: rgba(212,175,55,0.95);
+            background: rgba(212,175,55,0.08);
+            transform: translateY(-1px);
+        }
+
+        .option-row[aria-disabled="true"] {
+            cursor: not-allowed;
+        }
+
+        .option-row.correct {
+            background: #ecfdf5 !important;
+            border-color: #10b981 !important;
+            color: #065f46 !important;
+        }
+
+        .option-row.incorrect {
+            background: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+
+        .feedback-box {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.45;
+            display: none;
+            border: 1px solid rgba(0,0,0,0.06);
+            text-align: left;
+        }
+
+        .feedback-box.correct-style {
+            background: #e6f4ea;
+            color: #137333;
+            border-left: 6px solid #137333;
+        }
+
+        .feedback-box.incorrect-style {
+            background: #fce8e6;
+            color: #c5221f;
+            border-left: 6px solid #c5221f;
+        }
+
+        .action-footer {
+            padding: 16px 22px 24px;
+            background: rgba(250,248,245,1);
+            border-top: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .primary-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-size: 1.02rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .primary-btn:hover { transform: translateY(-2px); opacity: 0.96; }
+
+        .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .results-panel {
+            text-align: center;
+            padding: 42px 28px;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: #fdfaf4;
+            border: 5px solid var(--accent-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin: 20px auto;
+        }
+
+        @media (max-width: 520px) {
+            .trivia-wrapper { padding: 0 12px; }
+            .game-body { padding-left: 14px; padding-right: 14px; }
+            .question-text { font-size: 1.15rem; }
+        }
+    </style>
+</head>
+<body class="trivia-bg-2">
+    <div class="trivia-wrapper">
+        <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Volver al Inicio</a>
+
+        <!-- PANTALLA 1: SELECCIÓN DE CATEGORÍA -->
+        <div id="panel-seleccion" class="category-panel">
+            <h1 class="trivia-main-title">Gimnasio de la Fe</h1>
+            <p class="trivia-subtitle">Sube de nivel con preguntas didácticas sobre la Biblia (10 por categoría).</p>
+
+            <div class="panel-grid">
+                <div class="select-card" role="button" tabindex="0" onclick="iniciarTrivia('AT')" onkeydown="if(event.key==='Enter') iniciarTrivia('AT')">
+                    <i class="fa-solid fa-scroll" aria-hidden="true"></i>
+                    <h3>Antiguo Testamento</h3>
+                    <p>10 Niveles • Historias & Profetas</p>
+                </div>
+
+                <div class="select-card" role="button" tabindex="0" onclick="iniciarTrivia('NT')" onkeydown="if(event.key==='Enter') iniciarTrivia('NT')">
+                    <i class="fa-solid fa-book-bible" aria-hidden="true"></i>
+                    <h3>Nuevo Testamento</h3>
+                    <p>10 Niveles • Evangelio & Epístolas</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 2: JUEGO ACTIVO -->
+        <div id="panel-juego" class="game-card" style="display:none;">
+            <div class="game-header">
+                <div>
+                    <div id="txt-categoria" style="font-weight:700; color:#555; font-size:1.05rem;">Antiguo Testamento</div>
+                    <div class="progress-container" aria-label="Progreso">
+                        <div id="barra-progreso" class="progress-bar"></div>
+                    </div>
+                </div>
+                <div id="badge-nivel" class="level-badge">Nivel 1</div>
+            </div>
+
+            <div class="game-body">
+                <div class="question-image-container">
+                    <img id="img-pregunta" src="" alt="Imagen de la pregunta" />
+                </div>
+
+                <h2 id="txt-pregunta" class="question-text">Cargando pregunta...</h2>
+
+                <div id="contenedor-opciones" class="options-vertical-grid"></div>
+
+                <div id="caja-feedback" class="feedback-box"></div>
+            </div>
+
+            <div class="action-footer">
+                <button id="btn-siguiente" class="primary-btn" style="display:none;" onclick="siguienteNivel()">
+                    Siguiente Nivel <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PANTALLA 3: RESULTADOS -->
+        <div id="panel-resultados" class="category-panel results-panel" style="display:none;">
+            <h1 class="trivia-main-title">Desafío Concluido</h1>
+            <p id="txt-rango" style="font-size:1.25rem; font-weight:700; color: var(--accent-color); margin-top:10px;">Rango Obtenido</p>
+
+            <div id="circulo-puntaje" class="score-circle">0/10</div>
+
+            <p id="txt-mensaje-final" style="margin: 10px auto 26px; color:#666; max-width: 720px; font-weight:600;"> </p>
+
+            <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+                <button class="primary-btn" onclick="reiniciarJuego()">Intentar de Nuevo <i class="fa-solid fa-rotate" aria-hidden="true"></i></button>
+                <a href="/" class="back-btn" style="margin:0; display:flex; align-items:center;">Salir al Inicio</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bancoPreguntas = {
+            AT: [
+                { progreso: "Nivel 1 • Principiante", imagen: "https://images.unsplash.com/photo-1534796636918-9b1d5a8abce9?w=900", q: "¿Quién construyó el arca para salvar a su familia y a los animales?", options: ["Abraham", "Noé", "Moisés", "Isaac"], answer: 1, feedback: "¡Correcto! Dios indicó a Noé cómo construir el arca (Génesis 6)." },
+                { progreso: "Nivel 2 • Principiante", imagen: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900", q: "¿Qué mar abrió Moisés con el poder de Dios?", options: ["Mar Muerto", "Mar de Galilea", "Mar Rojo", "Mar Mediterráneo"], answer: 2, feedback: "¡Muy bien! El Mar Rojo se abrió para que el pueblo escapara (Éxodo 14)." },
+                { progreso: "Nivel 3 • Principiante", imagen: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=900", q: "¿Con qué venció el joven David a Goliat?", options: ["Una espada", "Una honda y una piedra", "Un arco", "Una lanza"], answer: 1, feedback: "¡Correcto! David confió en Jehová y usó una honda y una piedra (1 Samuel 17)." },
+                { progreso: "Nivel 4 • Intermedio", imagen: "https://images.unsplash.com/photo-1527853787696-f7be74f2e39a?w=900", q: "¿Qué hijo de Jacob fue vendido a Egipto?", options: ["Benjamín", "Rubén", "José", "Judá"], answer: 2, feedback: "Exacto: José fue vendido y Dios transformó esa historia en bendición (Génesis 37)." },
+                { progreso: "Nivel 5 • Intermedio", imagen: "https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=900", q: "¿Qué profeta fue protegido en el foso de leones?", options: ["Daniel", "Jeremías", "Isaías", "Ezequiel"], answer: 0, feedback: "¡Asombroso! Dios envió ayuda y Daniel fue preservado (Daniel 6)." },
+                { progreso: "Nivel 6 • Intermedio", imagen: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=900", q: "¿Quién tenía fuerza extraordinaria y la perdió al cortar el cabello?", options: ["Sansón", "Gedeón", "Samuel", "Jefté"], answer: 0, feedback: "¡Bien pensado! Sansón perdió su fuerza cuando rompió su voto (Jueces 16)." },
+                { progreso: "Nivel 7 • Avanzado", imagen: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=900", q: "¿Quién fue llevado al cielo sin morir, en un carro de fuego?", options: ["Elías", "Eliseo", "Enoc", "Malaquías"], answer: 0, feedback: "¡Gran conocimiento! Elías fue arrebatado al cielo (2 Reyes 2)." },
+                { progreso: "Nivel 8 • Avanzado", imagen: "https://images.unsplash.com/photo-1515516969-d4008cc6241a?w=900", q: "¿Cómo se llaman los cánticos y oraciones de Israel?", options: ["Proverbios", "Eclesiastés", "Salmos", "Cantares"], answer: 2, feedback: "¡Correcto! Los Salmos son el libro de oración y cánticos (Salmos)." },
+                { progreso: "Nivel 9 • Avanzado", imagen: "https://images.unsplash.com/photo-1498855926480-d98e83099315?w=900", q: "¿Quién fue la esposa de Abraham que dio a luz a Isaac en la vejez?", options: ["Rebeca", "Sara", "Raquel", "Lea"], answer: 1, feedback: "¡Impresionante! Sara recibió la promesa de Dios (Génesis 21)." },
+                { progreso: "Nivel 10 • Experto", imagen: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900", q: "¿En qué monte Dios dio los Diez Mandamientos a Moisés?", options: ["Monte Carmelo", "Monte Sinaí", "Monte Ararat", "Monte Nebo"], answer: 1, feedback: "¡Nivel Experto! Los mandamientos se entregaron en el Monte Sinaí (Éxodo 19)." }
+            ],
+            NT: [
+                { progreso: "Nivel 1 • Principiante", imagen: "https://images.unsplash.com/photo-1575654395061-e50beec68a83?w=900", q: "¿En qué ciudad nació Jesús?", options: ["Nazaret", "Jerusalén", "Belén", "Cafarnaúm"], answer: 2, feedback: "¡Exacto! Jesús nació en Belén (Mateo 2)." },
+                { progreso: "Nivel 2 • Principiante", imagen: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=900", q: "¿Cuántos apóstoles escogió Jesús?", options: ["7", "10", "12", "70"], answer: 2, feedback: "Muy bien: Jesús escogió a doce (Lucas 6)." },
+                { progreso: "Nivel 3 • Principiante", imagen: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=900", q: "¿Qué usó Jesús junto a dos peces para alimentar a una multitud?", options: ["Panes de cebada", "Frutas", "Arroz", "Pescado solo"], answer: 0, feedback: "¡Estupendo! Con cinco panes de cebada y dos peces alimentó a muchos (Juan 6)." },
+                { progreso: "Nivel 4 • Intermedio", imagen: "https://images.unsplash.com/photo-1516280440614-37939bbacd6a?w=900", q: "¿Quién negó conocer a Jesús antes de que cantara el gallo?", options: ["Juan", "Pedro", "Andrés", "Tomás"], answer: 1, feedback: "¡Correcto! Pedro negó, pero después fue restaurado (Mateo 26)." },
+                { progreso: "Nivel 5 • Intermedio", imagen: "https://images.unsplash.com/photo-1569531193135-1546677ba9a2?w=900", q: "¿Quién traicionó a Jesús por treinta monedas?", options: ["Felipe", "Judas Iscariote", "Bartolomé", "Simón"], answer: 1, feedback: "Exacto: Judas entregó a Jesús (Mateo 26)." },
+                { progreso: "Nivel 6 • Intermedio", imagen: "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=900", q: "¿A quién resucitó Jesús luego de cuatro días?", options: ["Lázaro", "Jairo", "Nicodemo", "Bartimeo"], answer: 0, feedback: "¡Maravilloso! Lázaro volvió a la vida por el poder de Jesús (Juan 11)." },
+                { progreso: "Nivel 7 • Avanzado", imagen: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=900", q: "¿En qué río bautizó Juan a Jesús?", options: ["Río Nilo", "Río Éufrates", "Río Jordán", "Río Tigris"], answer: 2, feedback: "¡Gran nivel! Fue en el Río Jordán (Mateo 3)." },
+                { progreso: "Nivel 8 • Avanzado", imagen: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=900", q: "¿Quién escribió gran parte de las cartas doctrinales del NT?", options: ["Pedro", "Santiago", "Juan", "Pablo"], answer: 3, feedback: "¡Así es! Pablo escribió muchas cartas para la iglesia (Hechos/Cartas)." },
+                { progreso: "Nivel 9 • Avanzado", imagen: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=900", q: "¿Cómo se llama el libro del NT con visiones proféticas del fin?", options: ["Hechos", "Apocalipsis", "Hebreos", "Judas"], answer: 1, feedback: "¡Excelente! Apocalipsis fue revelado a Juan (Apocalipsis 1)." },
+                { progreso: "Nivel 10 • Experto", imagen: "https://images.unsplash.com/photo-1541535881962-e668f2c864a6?w=900", q: "¿Qué oficio tenía José, el padre terrenal de Jesús?", options: ["Pescador", "Carpintero", "Agricultor", "Cobrador"], answer: 1, feedback: "¡Impresionante! José era artesano/carpintero (referencias en tradiciones del tiempo de Jesús)." }
+            ]
+        };
+
+        let preguntasActuales = [];
+        let indicePregunta = 0;
+        let puntaje = 0;
+        let categoriaActiva = '';
+
+        function iniciarTrivia(categoria) {
+            categoriaActiva = categoria;
+            preguntasActuales = bancoPreguntas[categoria];
+            indicePregunta = 0;
+            puntaje = 0;
+
+            document.getElementById('panel-seleccion').style.display = 'none';
+            document.getElementById('panel-juego').style.display = 'block';
+            document.getElementById('panel-resultados').style.display = 'none';
+
+            document.getElementById('txt-categoria').textContent = categoria === 'AT' ? 'Antiguo Testamento' : 'Nuevo Testamento';
+            cargarPregunta();
+        }
+
+        function cargarPregunta() {
+            const total = preguntasActuales.length;
+            const porcentaje = (indicePregunta / total) * 100;
+            document.getElementById('barra-progreso').style.width = porcentaje + '%';
+
+            const pregunta = preguntasActuales[indicePregunta];
+
+            document.getElementById('badge-nivel').textContent = pregunta.progreso;
+            document.getElementById('img-pregunta').src = pregunta.imagen;
+            document.getElementById('img-pregunta').alt = 'Imagen para la pregunta';
+            document.getElementById('txt-pregunta').textContent = pregunta.q;
+
+            const contenedor = document.getElementById('contenedor-opciones');
+            contenedor.innerHTML = '';
+
+            const feedback = document.getElementById('caja-feedback');
+            feedback.style.display = 'none';
+            feedback.className = 'feedback-box';
+
+            document.getElementById('btn-siguiente').style.display = 'none';
+
+            pregunta.options.forEach((opcion, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'option-row';
+                btn.innerHTML = `<span>${opcion}</span><i class="fa-regular fa-circle"></i>`;
+                btn.onclick = () => evaluarRespuesta(idx, btn);
+                contenedor.appendChild(btn);
+            });
+        }
+
+        function evaluarRespuesta(indiceSeleccionado, boton) {
+            const pregunta = preguntasActuales[indicePregunta];
+            const correcta = pregunta.answer;
+
+            const todos = document.querySelectorAll('#contenedor-opciones .option-row');
+            todos.forEach(b => {
+                b.disabled = true;
+                b.setAttribute('aria-disabled', 'true');
+            });
+
+            const feedback = document.getElementById('caja-feedback');
+            feedback.style.display = 'block';
+            feedback.textContent = ''; // limpiar
+
+            if (indiceSeleccionado === correcta) {
+                boton.classList.add('correct');
+                boton.innerHTML = `<span>${pregunta.options[indiceSeleccionado]}</span><i class="fa-solid fa-circle-check"></i>`;
+                feedback.textContent = '✅ ' + pregunta.feedback;
+                feedback.classList.add('correct-style');
+                puntaje++;
+            } else {
+                boton.classList.add('incorrect');
+                boton.innerHTML = `<span>${pregunta.options[indiceSeleccionado]}</span><i class="fa-solid fa-circle-xmark"></i>`;
+
+                // marcar la correcta
+                todos[correcta].classList.add('correct');
+                todos[correcta].innerHTML = `<span>${pregunta.options[correcta]}</span><i class="fa-solid fa-circle-check"></i>`;
+
+                feedback.textContent = '❌ ' + 'La opción correcta era: ' + pregunta.options[correcta] + '. ' + pregunta.feedback;
+                feedback.classList.add('incorrect-style');
+            }
+
+            document.getElementById('btn-siguiente').style.display = 'inline-flex';
+        }
+
+        function siguienteNivel() {
+            indicePregunta++;
+            if (indicePregunta < preguntasActuales.length) {
+                cargarPregunta();
+            } else {
+                mostrarResultados();
+            }
+        }
+
+        function mostrarResultados() {
+            document.getElementById('panel-juego').style.display = 'none';
+            document.getElementById('panel-resultados').style.display = 'block';
+
+            const total = preguntasActuales.length;
+            document.getElementById('circulo-puntaje').textContent = `${puntaje}/${total}`;
+
+            const txtRango = document.getElementById('txt-rango');
+            const txtMensaje = document.getElementById('txt-mensaje-final');
+
+            if (puntaje === total) {
+                txtRango.textContent = '🏆 Erudito de las Escrituras';
+                txtMensaje.textContent = '¡Increíble! Superaste todos los niveles sin fallar. ¡Sigue edificándote con la Palabra de Dios!';
+            } else if (puntaje >= 8) {
+                txtRango.textContent = '🥇 Maestro Bíblico';
+                txtMensaje.textContent = '¡Excelente! Tu conocimiento va creciendo. Repite el juego para aprender aún más.';
+            } else if (puntaje >= 5) {
+                txtRango.textContent = '🥈 Buscador de la Verdad';
+                txtMensaje.textContent = '¡Buen avance! Cada respuesta te acerca más a entender la Biblia con claridad.';
+            } else {
+                txtRango.textContent = '🌱 Principiante de la Palabra';
+                txtMensaje.textContent = '¡Gracias por participar! Este es el comienzo. Vuelve pronto para seguir subiendo de nivel.';
+            }
+        }
+
+        function reiniciarJuego() {
+            document.getElementById('panel-resultados').style.display = 'none';
+            iniciarTrivia(categoriaActiva);
+        }
+    </script>
+</body>
+</html>
+

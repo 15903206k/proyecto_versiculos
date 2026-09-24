@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis Alabanzas Descargadas - Palabra de Vida</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+  <main class="container py-4" style="max-width: 1100px;">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+      <a href="/alabanzas" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> Volver a Alabanzas
+      </a>
+
+      <div class="text-center" style="min-width: 240px;">
+        <div class="d-flex align-items-center justify-content-center gap-2">
+          <i class="fa-solid fa-music" style="color: var(--accent-color);"></i>
+          <h1 style="font-family: 'Cinzel', serif; color: var(--primary-color); font-size: 2rem; margin: 0;">
+            Mis Alabanzas Descargadas
+          </h1>
+        </div>
+        <p class="mb-0" style="color: rgba(44,44,44,0.85); font-weight: 600;">Escucha tus descargas</p>
+      </div>
+
+      <div class="text-end">
+        <span class="badge" style="background: rgba(212,175,55,0.14); color: var(--primary-color); border: 1px solid rgba(212,175,55,0.45); font-weight: 800;">
+          <i class="fa-solid fa-volume-high me-1"></i>
+          <span>Audio disponible: <b>{{ canciones|length }}</b></span>
+        </span>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Panel canciones -->
+      <section class="col-12 col-lg-5">
+        <div class="card" style="border-top: 6px solid var(--accent-color); box-shadow: 0 18px 46px rgba(74,21,37,0.10);">
+          <div class="card-body">
+            <h2 class="h4" style="font-family:'Cinzel', serif; color: var(--primary-color); font-weight: 800;">
+              Selecciona una alabanza descargada
+            </h2>
+            <p style="color: rgba(44,44,44,0.85); font-weight: 600;">Se cargan desde <b>static/music/</b></p>
+
+            <div class="list-group list-group-flush mt-3" id="songsList" role="list">
+              <!-- JS insertará las filas -->
+            </div>
+
+            <div class="alert alert-warning mt-4 mb-0" id="songsMissing" style="display:none;">
+              No hay archivos .mp3 o .m4a en <b>static/music/</b>.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel reproductor -->
+      <section class="col-12 col-lg-7">
+        <div class="card" style="border-top: 6px solid var(--primary-color); box-shadow: 0 18px 46px rgba(74,21,37,0.10);">
+          <div class="card-body">
+            <h2 class="h4" style="font-family:'Cinzel', serif; color: var(--primary-color); font-weight: 800;">
+              Reproductor
+            </h2>
+            <p style="color: rgba(44,44,44,0.85); font-weight: 600;">Elige una canción y presiona play.</p>
+
+            <div class="p-3" style="background: rgba(212,175,55,0.10); border: 1px solid rgba(212,175,55,0.35); border-radius: 16px;">
+              <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+                <div>
+                  <div style="font-weight: 900; color: var(--primary-color);" id="nowPlayingTitle">—</div>
+                  <div style="color: rgba(44,44,44,0.85); font-weight: 700;" id="nowPlayingSubtitle">Selecciona una alabanza</div>
+                </div>
+
+                <div class="text-end">
+                  <i class="fa-solid fa-cross" style="color: var(--accent-color); font-size: 1.4rem;"></i>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <audio id="audioPlayer" controls preload="metadata" style="width: 100%;">
+                  <source id="audioSource" src="" type="audio/mpeg" />
+                  Tu navegador no soporta audio.
+                </audio>
+              </div>
+
+              <div class="mt-3 d-flex gap-2 flex-wrap">
+                <button class="btn" id="btnPrev" type="button" style="background: rgba(74,21,37,0.95); color: var(--accent-color); font-weight: 900; border-radius: 999px;">
+                  <i class="fa-solid fa-backward-step me-1"></i> Anterior
+                </button>
+                <button class="btn" id="btnNext" type="button" style="background: rgba(212,175,55,0.95); color: #2b1a10; font-weight: 900; border-radius: 999px;">
+                  Siguiente <i class="fa-solid fa-forward-step ms-1"></i>
+                </button>
+
+                <button class="btn btn-outline-dark" id="btnShuffle" type="button" style="border-radius: 999px; font-weight: 900;">
+                  <i class="fa-solid fa-shuffle me-1"></i> Aleatorio
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-4" style="border-top: 1px solid rgba(0,0,0,0.08); padding-top: 14px;">
+              <p class="mb-0" style="color: rgba(44,44,44,0.8); font-weight: 600;">
+                Consejo: si tienes audífonos, activa el volumen con cuidado.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Lista dinámica (NO hardcodeada): generada desde Flask.
+    const songs = [
+      {% for cancion in canciones %}
+        { title: "{{ cancion }}", file: "{{ cancion }}" },
+      {% endfor %}
+    ];
+
+    const listEl = document.getElementById('songsList');
+    const missingEl = document.getElementById('songsMissing');
+
+    const audioPlayer = document.getElementById('audioPlayer');
+    const audioSource = document.getElementById('audioSource');
+    const nowPlayingTitle = document.getElementById('nowPlayingTitle');
+    const nowPlayingSubtitle = document.getElementById('nowPlayingSubtitle');
+
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const btnShuffle = document.getElementById('btnShuffle');
+
+    let currentIndex = 0;
+
+    function staticMusicUrl(fileName) {
+      return '{{ url_for("static", filename="music/") }}' + fileName;
+    }
+
+    function setActiveButton() {
+      document.querySelectorAll('[data-song-idx]').forEach(btn => {
+        const idx = Number(btn.getAttribute('data-song-idx'));
+        if (idx === currentIndex) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+    }
+
+    function setAudioTypeByExtension(fileName) {
+      const lower = (fileName || '').toLowerCase();
+      if (lower.endsWith('.m4a')) return 'audio/mp4';
+      if (lower.endsWith('.mp3')) return 'audio/mpeg';
+      return '';
+    }
+
+    function loadSong(index, autoPlay = true) {
+      if (index < 0 || index >= songs.length) return;
+      currentIndex = index;
+
+      const song = songs[currentIndex];
+      const url = staticMusicUrl(song.file);
+
+      nowPlayingTitle.textContent = song.title;
+      nowPlayingSubtitle.textContent = '';
+
+      audioSource.type = setAudioTypeByExtension(song.file);
+      audioSource.src = url;
+      audioPlayer.load();
+
+      if (autoPlay) {
+        audioPlayer.play().catch(() => {});
+      }
+
+      setActiveButton();
+    }
+
+    function renderSongs() {
+      listEl.innerHTML = '';
+
+      if (!songs || songs.length === 0) {
+        missingEl.style.display = 'block';
+        return;
+      }
+
+      missingEl.style.display = 'none';
+
+      songs.forEach((song, idx) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'list-group-item d-flex align-items-start justify-content-between gap-3';
+        wrapper.style.border = '1px solid rgba(0,0,0,0.05)';
+
+        const left = document.createElement('div');
+        left.style.flex = '1';
+        left.innerHTML = `
+          <div style="font-weight: 900; color: var(--primary-color);">${song.title}</div>
+          <div style="color: rgba(44,44,44,0.8); font-weight: 650; font-size: 0.95rem;">Archivo</div>
+        `;
+
+        const playIcon = document.createElement('i');
+        playIcon.className = 'fa-solid fa-play';
+        playIcon.style.color = 'var(--accent-color)';
+
+        // Zona derecha: botones (play + eliminar)
+        const right = document.createElement('div');
+        right.className = 'd-flex align-items-center gap-2';
+
+        const playBtn = document.createElement('button');
+        playBtn.type = 'button';
+        playBtn.className = 'btn p-0';
+        playBtn.style.color = 'inherit';
+        playBtn.appendChild(playIcon);
+        playBtn.addEventListener('click', () => loadSong(idx, true));
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.onsubmit = function(e) {
+          return confirm('¿Estás seguro de que deseas eliminar esta alabanza? Esta acción no se puede deshacer.');
+        };
+
+        form.action = '/eliminar_alabanza/' + encodeURIComponent(song.file);
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'submit';
+        delBtn.className = 'btn btn-danger btn-sm';
+        delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+
+        form.appendChild(delBtn);
+
+        right.appendChild(playBtn);
+        right.appendChild(form);
+
+        wrapper.appendChild(left);
+        wrapper.appendChild(right);
+
+        listEl.appendChild(wrapper);
+      });
+
+      setActiveButton();
+      loadSong(currentIndex, false);
+    }
+
+    btnPrev.addEventListener('click', () => {
+      const nextIdx = (currentIndex - 1 + songs.length) % songs.length;
+      loadSong(nextIdx, true);
+    });
+
+    btnNext.addEventListener('click', () => {
+      const nextIdx = (currentIndex + 1) % songs.length;
+      loadSong(nextIdx, true);
+    });
+
+    btnShuffle.addEventListener('click', () => {
+      if (songs.length <= 1) return;
+      let nextIdx = currentIndex;
+      while (nextIdx === currentIndex) {
+        nextIdx = Math.floor(Math.random() * songs.length);
+      }
+      loadSong(nextIdx, true);
+    });
+
+    renderSongs();
+  </script>
+</body>
+</html>
+
